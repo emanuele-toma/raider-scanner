@@ -188,7 +188,7 @@ The item database is included with the app. To get the latest items, download th
 
 ## 📄 License
 
-MIT License - See [LICENSE](LICENSE) file for details.
+AGPL License - See [LICENSE](LICENSE) file for details.
 
 ---
 
