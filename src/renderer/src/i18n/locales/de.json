@@ -1,0 +1,126 @@
+{
+  "app": {
+    "title": "RAIDER SCANNER",
+    "loading": "Raider Scanner wird initialisiert...",
+    "footer": "Raider Scanner v1.1.0 • Daten bereitgestellt von RaidTheory/arcraiders-data"
+  },
+  "sidebar": {
+    "online": "Online",
+    "items": "Gegenstände",
+    "quests": "Quests",
+    "trades": "Handel",
+    "search": "Suche",
+    "settings": "Einstellungen",
+    "quickActions": "Schnellaktionen",
+    "scanNow": "Jetzt Scannen",
+    "howToUse": "Anleitung",
+    "instruction1": "Bewege die Maus über einen Gegenstand in ARC Raiders",
+    "instruction2": "Drücke",
+    "instruction3": "Zeige Gegenstandsdetails im Overlay"
+  },
+  "searchPanel": {
+    "title": "Gegenstandsdatenbank",
+    "description": "Durchsuche die ARC Raiders Datenbank nach Herstellungsrezepten, Quest-Anforderungen und Handelsinformationen."
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "unsavedChanges": "Ungespeicherte Änderungen",
+    "language": "🌐 Sprache",
+    "appLanguage": "App Sprache",
+    "appLanguageHint": "Sprache der App-Oberfläche",
+    "gameLanguage": "Spielsprache",
+    "gameLanguageHint": "Im Spiel verwendete Sprache (für OCR und Suche)",
+    "hotkeys": "⌨️ Tastenkürzel",
+    "scanHotkey": "Scan-Taste",
+    "scanHotkeyHint": "Drücke diese Taste während du über einem Gegenstand bist",
+    "closeOverlayHotkey": "Overlay Schließen Taste",
+    "closeOverlayHotkeyHint": "Overlay sofort schließen",
+    "pauseTimerHotkey": "Timer Pause Taste",
+    "pauseTimerHotkeyHint": "Auto-Hide Countdown stoppen",
+    "overlay": "🖼️ Overlay",
+    "autoHideDelay": "Auto-Hide Verzögerung",
+    "autoHideDelayHint": "Wie lange das Overlay sichtbar bleibt",
+    "overlayOpacity": "Overlay Deckkraft",
+    "overlayOpacityHint": "Transparenz der Gegenstandskarte",
+    "overlayWidth": "Overlay Breite",
+    "overlayWidthHint": "Maximale Breite der Overlay-Karte",
+    "crtEffect": "CRT Scanlinien Effekt",
+    "crtEffectHint": "Retro-Scanlinien-Effekt aktivieren",
+    "enabled": "Aktiviert",
+    "disabled": "Deaktiviert",
+    "reset": "Zurücksetzen",
+    "saveSettings": "Einstellungen Speichern"
+  },
+  "itemCard": {
+    "match": "{{percent}}% Übereinstimmung",
+    "value": "Wert",
+    "weight": "Gewicht",
+    "stack": "Stapel",
+    "usedInCrafting": "Verwendet für Herstellung",
+    "questRequirements": "Quest-Anforderungen",
+    "trades": "Handel",
+    "hideoutUpgrades": "Versteck-Upgrades",
+    "breakdown": "Aufschlüsselung",
+    "recycle": "Recyceln",
+    "salvage": "Bergen",
+    "foundIn": "Gefunden in",
+    "buy": "Kaufen",
+    "sell": "Verkaufen",
+    "for": "für",
+    "level": "Stufe",
+    "more": "+{{count}} mehr",
+    "perDay": "/Tag"
+  },
+  "overlay": {
+    "noMatchFound": "Keine Übereinstimmung",
+    "detectedText": "Erkannter Text",
+    "noTooltipDetected": "Kein Tooltip auf dem Bildschirm erkannt",
+    "noMatchingItem": "Kein passender Gegenstand gefunden"
+  },
+  "calibration": {
+    "title": "Tooltip Kalibrierung",
+    "notCalibrated": "Nicht Kalibriert",
+    "calibrated": "Kalibriert",
+    "color": "Farbe",
+    "startBtn": "Kalibrierung Starten",
+    "recalibrateBtn": "Neu Kalibrieren",
+    "hint": "Kalibrierung hilft dem Scanner Gegenstandsnamen in Tooltips zu finden",
+    "step1of2": "Schritt 1/2",
+    "step2of2": "Schritt 2/2",
+    "stepStart": "Drücke Strg+P während du über einem Tooltip bist",
+    "stepPickColor": "Klicke auf die TOOLTIP HINTERGRUNDFARBE",
+    "complete": "Kalibrierung abgeschlossen!",
+    "captureInstruction": "Öffne einen Tooltip im Spiel, dann drücke Strg+P zum Aufnehmen"
+  },
+  "search": {
+    "placeholder": "Gegenstände suchen...",
+    "noResults": "Keine Gegenstände gefunden"
+  },
+  "common": {
+    "close": "Schließen",
+    "cancel": "Abbrechen",
+    "unknown": "Unbekannt"
+  },
+  "rarity": {
+    "common": "Gewöhnlich",
+    "uncommon": "Ungewöhnlich",
+    "rare": "Selten",
+    "epic": "Episch",
+    "legendary": "Legendär"
+  },
+  "itemType": {
+    "Quick Use": "Schnellnutzung",
+    "Consumable": "Verbrauchsgegenstand",
+    "Material": "Material",
+    "Component": "Komponente",
+    "Weapon": "Waffe",
+    "Armor": "Rüstung",
+    "Attachment": "Aufsatz",
+    "Container": "Behälter",
+    "Key": "Schlüssel",
+    "Quest Item": "Quest-Gegenstand",
+    "Tool": "Werkzeug",
+    "Throwable": "Wurfgegenstand",
+    "Ammo": "Munition"
+  }
+}

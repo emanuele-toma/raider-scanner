@@ -1,0 +1,311 @@
+/**
+ * Speranza Terminal Theme - CSS Variables and Base Styles
+ * Synthwave/Retro-Futurism aesthetic for ARC Raiders
+ */
+
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+
+:root {
+  /* === Core Color Palette === */
+  /* Deep purples */
+  --speranza-bg-darkest: #0a0512;
+  --speranza-bg-darker: #120a1e;
+  --speranza-bg-dark: #1a0a2e;
+  --speranza-bg-medium: #2d1b4e;
+  --speranza-bg-light: #3d2a5e;
+
+  /* Neon colors */
+  --speranza-cyan: #00ffff;
+  --speranza-cyan-dim: #00cccc;
+  --speranza-cyan-glow: rgba(0, 255, 255, 0.3);
+
+  --speranza-pink: #ff00ff;
+  --speranza-pink-dim: #cc00cc;
+  --speranza-pink-glow: rgba(255, 0, 255, 0.3);
+
+  --speranza-purple: #a855f7;
+  --speranza-purple-dim: #7c3aed;
+  --speranza-purple-glow: rgba(168, 85, 247, 0.3);
+
+  /* Status colors */
+  --speranza-success: #00ff88;
+  --speranza-warning: #ffaa00;
+  --speranza-error: #ff4444;
+  --speranza-info: #00aaff;
+
+  /* Rarity colors (ARC Raiders style) */
+  --rarity-common: #9ca3af;
+  --rarity-uncommon: #22c55e;
+  --rarity-rare: #3b82f6;
+  --rarity-epic: #a855f7;
+  --rarity-legendary: #f59e0b;
+
+  /* Text colors */
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0c0;
+  --text-muted: #6b7280;
+  --text-accent: var(--speranza-cyan);
+
+  /* UI elements */
+  --border-color: rgba(0, 255, 255, 0.2);
+  --border-glow: rgba(0, 255, 255, 0.5);
+  --card-bg: rgba(26, 10, 46, 0.9);
+  --card-bg-hover: rgba(45, 27, 78, 0.9);
+
+  /* Scanline effect */
+  --scanline-color: rgba(0, 255, 255, 0.03);
+
+  /* === Typography === */
+  --font-display: 'Orbitron', sans-serif;
+  --font-body: 'Rajdhani', sans-serif;
+  --font-mono: 'Share Tech Mono', monospace;
+
+  /* === Spacing === */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* === Border Radius === */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* === Transitions === */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 400ms ease;
+}
+
+/* === Base Reset === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--speranza-bg-dark);
+  color: var(--text-primary);
+  line-height: 1.5;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* === Scrollbar Styling === */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--speranza-bg-darker);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--speranza-cyan-dim);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--speranza-cyan);
+}
+
+/* === CRT Scanline Overlay === */
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    var(--scanline-color) 2px,
+    var(--scanline-color) 4px
+  );
+}
+
+/* === Glow Effects === */
+.glow-cyan {
+  text-shadow:
+    0 0 5px var(--speranza-cyan),
+    0 0 10px var(--speranza-cyan),
+    0 0 20px var(--speranza-cyan-glow);
+}
+
+.glow-pink {
+  text-shadow:
+    0 0 5px var(--speranza-pink),
+    0 0 10px var(--speranza-pink),
+    0 0 20px var(--speranza-pink-glow);
+}
+
+.glow-purple {
+  text-shadow:
+    0 0 5px var(--speranza-purple),
+    0 0 10px var(--speranza-purple),
+    0 0 20px var(--speranza-purple-glow);
+}
+
+.box-glow-cyan {
+  box-shadow:
+    0 0 5px var(--speranza-cyan-glow),
+    0 0 10px var(--speranza-cyan-glow),
+    inset 0 0 5px var(--speranza-cyan-glow);
+}
+
+.box-glow-pink {
+  box-shadow:
+    0 0 5px var(--speranza-pink-glow),
+    0 0 10px var(--speranza-pink-glow),
+    inset 0 0 5px var(--speranza-pink-glow);
+}
+
+/* === Backdrop Blur === */
+.backdrop-blur {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* === Utility Classes === */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.text-cyan {
+  color: var(--speranza-cyan);
+}
+.text-pink {
+  color: var(--speranza-pink);
+}
+.text-purple {
+  color: var(--speranza-purple);
+}
+.text-success {
+  color: var(--speranza-success);
+}
+.text-warning {
+  color: var(--speranza-warning);
+}
+.text-error {
+  color: var(--speranza-error);
+}
+.text-muted {
+  color: var(--text-muted);
+}
+
+/* Rarity colors */
+.rarity-common {
+  color: var(--rarity-common);
+}
+.rarity-uncommon {
+  color: var(--rarity-uncommon);
+}
+.rarity-rare {
+  color: var(--rarity-rare);
+}
+.rarity-epic {
+  color: var(--rarity-epic);
+}
+.rarity-legendary {
+  color: var(--rarity-legendary);
+}
+
+/* === Animation Keyframes === */
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.8;
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  93% {
+    opacity: 0.8;
+  }
+  94% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 0.9;
+  }
+  96% {
+    opacity: 1;
+  }
+}
+
+@keyframes scan {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100%;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-flicker {
+  animation: flicker 4s ease-in-out infinite;
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out forwards;
+}

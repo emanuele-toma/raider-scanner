@@ -1,0 +1,322 @@
+/**
+ * Update Notification Styles
+ */
+
+/* Main notification container */
+.update-notification {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  right: var(--spacing-lg);
+  width: 380px;
+  background: var(--speranza-bg-darker);
+  border: 1px solid var(--speranza-cyan);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 0 30px rgba(0, 255, 255, 0.2),
+    0 10px 40px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  z-index: 10000;
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+.update-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--speranza-bg-darkest);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.update-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid var(--speranza-cyan);
+  border-radius: 50%;
+  color: var(--speranza-cyan);
+  flex-shrink: 0;
+}
+
+.update-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.update-icon svg.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.update-title-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.update-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.update-version {
+  display: inline-block;
+  margin-top: 2px;
+  padding: 2px 8px;
+  background: var(--speranza-cyan);
+  color: var(--speranza-bg-darkest);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+.update-minimize-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.update-minimize-btn:hover {
+  background: var(--speranza-bg-medium);
+  color: var(--text-primary);
+}
+
+.update-minimize-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Progress section */
+.update-progress-section {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.update-progress-bar {
+  height: 8px;
+  background: var(--speranza-bg-dark);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: var(--spacing-sm);
+}
+
+.update-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--speranza-cyan), var(--speranza-pink));
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px var(--speranza-cyan-glow);
+}
+
+.update-progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.update-progress-percent {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--speranza-cyan);
+}
+
+.update-progress-details {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.update-speed {
+  margin-left: var(--spacing-sm);
+  color: var(--text-secondary);
+}
+
+/* Error message */
+.update-error-message {
+  padding: var(--spacing-md);
+  background: rgba(255, 100, 100, 0.1);
+  border-bottom: 1px solid rgba(255, 100, 100, 0.3);
+}
+
+.update-error-message p {
+  margin: 0;
+  color: #ff6464;
+  font-size: 0.85rem;
+}
+
+/* Release notes */
+.update-release-notes {
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.release-notes-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin: 0 0 var(--spacing-sm) 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.release-notes-content {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+/* Actions */
+.update-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  justify-content: flex-end;
+}
+
+.update-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid transparent;
+}
+
+.update-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.update-btn-secondary {
+  background: transparent;
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+.update-btn-secondary:hover {
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
+  background: var(--speranza-bg-medium);
+}
+
+.update-btn-primary {
+  background: var(--speranza-cyan);
+  border-color: var(--speranza-cyan);
+  color: var(--speranza-bg-darkest);
+}
+
+.update-btn-primary:hover {
+  background: var(--speranza-cyan-dim);
+  box-shadow: 0 0 15px var(--speranza-cyan-glow);
+}
+
+.update-btn-install {
+  background: linear-gradient(135deg, var(--speranza-cyan), var(--speranza-pink));
+  border-color: transparent;
+  color: white;
+}
+
+.update-btn-install:hover {
+  box-shadow: 0 0 20px var(--speranza-pink);
+}
+
+/* Minimized pill */
+.update-pill {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  right: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--speranza-bg-darker);
+  border: 1px solid var(--speranza-cyan);
+  border-radius: 20px;
+  color: var(--speranza-cyan);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 10000;
+  overflow: hidden;
+  transition: all var(--transition-fast);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+.update-pill:hover {
+  background: var(--speranza-bg-medium);
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.3);
+}
+
+.update-pill-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.update-pill-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.update-pill-icon svg.spinning {
+  animation: spin 1s linear infinite;
+}
+
+.update-pill-text {
+  white-space: nowrap;
+}
+
+.update-pill-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--speranza-cyan), var(--speranza-pink));
+  transition: width 0.3s ease;
+}

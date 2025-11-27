@@ -1,0 +1,126 @@
+{
+  "app": {
+    "title": "RAIDER SCANNER",
+    "loading": "Initialisation de Raider Scanner...",
+    "footer": "Raider Scanner v1.1.0 • Données fournies par RaidTheory/arcraiders-data"
+  },
+  "sidebar": {
+    "online": "En ligne",
+    "items": "Objets",
+    "quests": "Quêtes",
+    "trades": "Échanges",
+    "search": "Recherche",
+    "settings": "Paramètres",
+    "quickActions": "Actions Rapides",
+    "scanNow": "Scanner Maintenant",
+    "howToUse": "Comment Utiliser",
+    "instruction1": "Survolez un objet dans ARC Raiders",
+    "instruction2": "Appuyez sur",
+    "instruction3": "Voir les détails dans l'overlay"
+  },
+  "searchPanel": {
+    "title": "Base de Données",
+    "description": "Recherchez dans la base de données ARC Raiders pour trouver recettes, exigences de quêtes et informations d'échange."
+  },
+  "settings": {
+    "title": "Paramètres",
+    "unsavedChanges": "Modifications non enregistrées",
+    "language": "🌐 Langue",
+    "appLanguage": "Langue App",
+    "appLanguageHint": "Langue de l'interface de l'application",
+    "gameLanguage": "Langue du Jeu",
+    "gameLanguageHint": "Langue utilisée en jeu (pour OCR et recherche)",
+    "hotkeys": "⌨️ Raccourcis",
+    "scanHotkey": "Touche de Scan",
+    "scanHotkeyHint": "Appuyez sur cette touche en survolant un objet",
+    "closeOverlayHotkey": "Touche Fermer Overlay",
+    "closeOverlayHotkeyHint": "Fermer instantanément l'overlay",
+    "pauseTimerHotkey": "Touche Pause Timer",
+    "pauseTimerHotkeyHint": "Arrêter le compte à rebours",
+    "overlay": "🖼️ Overlay",
+    "autoHideDelay": "Délai Auto-masquage",
+    "autoHideDelayHint": "Durée de visibilité de l'overlay",
+    "overlayOpacity": "Opacité Overlay",
+    "overlayOpacityHint": "Transparence de la carte objet",
+    "overlayWidth": "Largeur Overlay",
+    "overlayWidthHint": "Largeur maximale de la carte overlay",
+    "crtEffect": "Effet Scanlines CRT",
+    "crtEffectHint": "Activer l'effet scanlines rétro",
+    "enabled": "Activé",
+    "disabled": "Désactivé",
+    "reset": "Réinitialiser",
+    "saveSettings": "Enregistrer"
+  },
+  "itemCard": {
+    "match": "{{percent}}% correspondance",
+    "value": "Valeur",
+    "weight": "Poids",
+    "stack": "Pile",
+    "usedInCrafting": "Utilisé pour Fabriquer",
+    "questRequirements": "Exigences de Quête",
+    "trades": "Échanges",
+    "hideoutUpgrades": "Améliorations Planque",
+    "breakdown": "Décomposition",
+    "recycle": "Recycler",
+    "salvage": "Récupérer",
+    "foundIn": "Trouvé dans",
+    "buy": "Acheter",
+    "sell": "Vendre",
+    "for": "pour",
+    "level": "Niv",
+    "more": "+{{count}} de plus",
+    "perDay": "/jour"
+  },
+  "overlay": {
+    "noMatchFound": "Aucune Correspondance",
+    "detectedText": "Texte détecté",
+    "noTooltipDetected": "Aucun tooltip détecté à l'écran",
+    "noMatchingItem": "Aucun objet correspondant trouvé"
+  },
+  "calibration": {
+    "title": "Calibration Tooltip",
+    "notCalibrated": "Non Calibré",
+    "calibrated": "Calibré",
+    "color": "Couleur",
+    "startBtn": "Démarrer Calibration",
+    "recalibrateBtn": "Recalibrer",
+    "hint": "La calibration aide le scanner à trouver les noms d'objets dans les tooltips",
+    "step1of2": "Étape 1/2",
+    "step2of2": "Étape 2/2",
+    "stepStart": "Appuyez sur Ctrl+P en survolant un tooltip",
+    "stepPickColor": "Cliquez sur la COULEUR DE FOND du tooltip",
+    "complete": "Calibration terminée!",
+    "captureInstruction": "Ouvrez un tooltip en jeu, puis appuyez sur Ctrl+P pour capturer"
+  },
+  "search": {
+    "placeholder": "Rechercher des objets...",
+    "noResults": "Aucun objet trouvé"
+  },
+  "common": {
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "unknown": "Inconnu"
+  },
+  "rarity": {
+    "common": "Commun",
+    "uncommon": "Peu commun",
+    "rare": "Rare",
+    "epic": "Épique",
+    "legendary": "Légendaire"
+  },
+  "itemType": {
+    "Quick Use": "Utilisation Rapide",
+    "Consumable": "Consommable",
+    "Material": "Matériau",
+    "Component": "Composant",
+    "Weapon": "Arme",
+    "Armor": "Armure",
+    "Attachment": "Accessoire",
+    "Container": "Conteneur",
+    "Key": "Clé",
+    "Quest Item": "Objet de Quête",
+    "Tool": "Outil",
+    "Throwable": "Lançable",
+    "Ammo": "Munitions"
+  }
+}

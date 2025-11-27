@@ -1,0 +1,198 @@
+/**
+ * Overlay Styles
+ */
+
+.overlay-container {
+  display: inline-block;
+  background: transparent;
+  padding: var(--spacing-md);
+  pointer-events: none;
+}
+
+.overlay-container * {
+  pointer-events: none;
+}
+
+.overlay-empty {
+  display: none;
+}
+
+/* Countdown progress bar */
+.overlay-countdown {
+  width: 100%;
+  height: 3px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 2px;
+  margin-bottom: var(--spacing-xs);
+  overflow: hidden;
+  display: none; /* Hidden - using border progress instead */
+}
+
+.countdown-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--speranza-cyan) 0%, var(--speranza-purple) 100%);
+  border-radius: 2px;
+  transition: width 0.05s linear;
+  box-shadow: 0 0 8px var(--speranza-cyan-glow);
+}
+
+.countdown-bar.paused {
+  background: linear-gradient(90deg, var(--speranza-gold) 0%, var(--speranza-warning) 100%);
+  box-shadow: 0 0 8px var(--speranza-gold);
+  animation: pulse-glow 1s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Border progress indicator */
+.border-progress-wrapper {
+  position: relative;
+  border-radius: var(--radius-lg);
+}
+
+.border-progress {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 20;
+  overflow: hidden;
+}
+
+.border-progress::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(
+    from 0deg,
+    var(--speranza-cyan) 0%,
+    var(--speranza-purple) calc(var(--progress) * 1%),
+    transparent calc(var(--progress) * 1%)
+  );
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  box-shadow: 0 0 10px var(--speranza-cyan-glow);
+}
+
+.border-progress.paused::before {
+  background: conic-gradient(
+    from 0deg,
+    var(--speranza-gold) 0%,
+    var(--speranza-warning) calc(var(--progress) * 1%),
+    transparent calc(var(--progress) * 1%)
+  );
+  box-shadow: 0 0 10px var(--speranza-gold);
+  animation: pulse-glow 1s ease-in-out infinite;
+}
+
+.overlay-content {
+  position: relative;
+}
+
+/* Override ItemCard max-height in overlay */
+.overlay-content .item-card {
+  max-height: none;
+  overflow-y: visible;
+}
+
+/* Error state */
+.overlay-error {
+  background: linear-gradient(135deg, rgba(46, 10, 26, 0.95) 0%, rgba(30, 10, 18, 0.98) 100%);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  min-width: 300px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 0 20px rgba(255, 68, 68, 0.1),
+    0 0 40px rgba(0, 0, 0, 0.5);
+  animation: slide-in 0.2s ease-out;
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-sm);
+  color: var(--speranza-warning);
+  text-shadow: 0 0 20px var(--speranza-warning);
+}
+
+.error-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--speranza-error);
+  margin-bottom: var(--spacing-md);
+  text-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+}
+
+.error-ocr {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-sm);
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-sm);
+}
+
+.error-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.error-text {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  word-break: break-word;
+}
+
+.error-message {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Card wrapper for contained CRT effect */
+.overlay-card-wrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+}
+
+/* Contained CRT scanlines */
+.crt-scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 10;
+  border-radius: inherit;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+}
