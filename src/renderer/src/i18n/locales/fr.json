@@ -2,7 +2,7 @@
   "app": {
     "title": "RAIDER SCANNER",
     "loading": "Initialisation de Raider Scanner...",
-    "footer": "Raider Scanner v1.1.1 • Données fournies par RaidTheory/arcraiders-data"
+    "footer": "Raider Scanner v1.2.0 • Données fournies par RaidTheory/arcraiders-data"
   },
   "sidebar": {
     "online": "En ligne",
