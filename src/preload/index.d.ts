@@ -41,7 +41,7 @@ interface RaiderScannerAPI {
   onCalibrationUpdate(callback: (state: CalibrationState) => void): () => void;
 
   // Settings panel state
-  setSettingsOpen(isOpen: boolean): void;
+  setHotkeyRecording(isRecording: boolean): void;
 
   // Updates
   checkForUpdates(): void;

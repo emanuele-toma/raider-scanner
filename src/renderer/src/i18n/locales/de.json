@@ -24,7 +24,7 @@
   },
   "settings": {
     "title": "Einstellungen",
-    "unsavedChanges": "Ungespeicherte Änderungen",
+    "saving": "Speichern...",
     "language": "🌐 Sprache",
     "appLanguage": "App Sprache",
     "appLanguageHint": "Sprache der App-Oberfläche",

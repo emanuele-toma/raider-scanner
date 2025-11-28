@@ -48,11 +48,6 @@ function App(): React.JSX.Element {
   const [activeTab, setActiveTab] = useState<'search' | 'settings'>('search');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Notify main process when settings tab changes (to disable/enable hotkeys)
-  useEffect(() => {
-    window.api.setSettingsOpen(activeTab === 'settings');
-  }, [activeTab]);
-
   // Load initial data
   useEffect(() => {
     async function loadData(): Promise<void> {

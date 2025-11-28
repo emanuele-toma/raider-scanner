@@ -52,7 +52,7 @@ const api = {
   captureCalibration: (): Promise<boolean> => ipcRenderer.invoke(IPC_CHANNELS.CALIBRATION_CAPTURE),
 
   // Settings panel state (to disable hotkeys while recording new ones)
-  setSettingsOpen: (isOpen: boolean): void => ipcRenderer.send(IPC_CHANNELS.SET_SETTINGS_OPEN, isOpen),
+  setHotkeyRecording: (isRecording: boolean): void => ipcRenderer.send(IPC_CHANNELS.SET_HOTKEY_RECORDING, isRecording),
 
   onCalibrationUpdate: (callback: (state: CalibrationState) => void): (() => void) => {
     const handler = (_event: Electron.IpcRendererEvent, state: CalibrationState): void => {

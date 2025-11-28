@@ -32,42 +32,43 @@ interface SettingsPanelProps {
 export default function SettingsPanel({ settings, onSettingsChange }: SettingsPanelProps): React.JSX.Element {
   const { t } = useTranslation();
   const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
-  const [hasChanges, setHasChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     setLocalSettings(settings);
   }, [settings]);
 
-  const handleChange = useCallback(<K extends keyof AppSettings>(key: K, value: AppSettings[K]) => {
-    setLocalSettings(prev => ({ ...prev, [key]: value }));
-    setHasChanges(true);
-  }, []);
+  // Auto-save settings immediately when changed
+  const handleChange = useCallback(
+    async <K extends keyof AppSettings>(key: K, value: AppSettings[K]) => {
+      const newSettings = { ...localSettings, [key]: value };
+      setLocalSettings(newSettings);
+      setIsSaving(true);
 
-  const handleSave = useCallback(async () => {
-    try {
-      const updated = await window.api.updateSettings(localSettings);
-      onSettingsChange(updated);
-      setHasChanges(false);
+      try {
+        const updated = await window.api.updateSettings(newSettings);
+        onSettingsChange(updated);
 
-      // Update i18next language if app language changed
-      if (updated.appLanguage !== settings.appLanguage) {
-        changeLanguage(updated.appLanguage);
+        // Update i18next language if app language changed
+        if (key === 'appLanguage' && updated.appLanguage !== settings.appLanguage) {
+          changeLanguage(updated.appLanguage);
+        }
+      } catch (error) {
+        console.error('Failed to save settings:', error);
+        // Revert on error
+        setLocalSettings(settings);
+      } finally {
+        setIsSaving(false);
       }
-    } catch (error) {
-      console.error('Failed to save settings:', error);
-    }
-  }, [localSettings, onSettingsChange, settings.appLanguage]);
-
-  const handleReset = useCallback(() => {
-    setLocalSettings(settings);
-    setHasChanges(false);
-  }, [settings]);
+    },
+    [localSettings, onSettingsChange, settings],
+  );
 
   return (
     <div className="settings-panel">
       <div className="settings-header">
         <h2 className="settings-title">⚙️ {t('settings.title')}</h2>
-        {hasChanges && <span className="settings-unsaved">{t('settings.unsavedChanges')}</span>}
+        {isSaving && <span className="settings-saving">{t('settings.saving')}</span>}
       </div>
 
       <div className="settings-content">
@@ -229,16 +230,6 @@ export default function SettingsPanel({ settings, onSettingsChange }: SettingsPa
             </label>
           </div>
         </div>
-      </div>
-
-      {/* Actions */}
-      <div className="settings-actions">
-        <button className="settings-btn settings-btn-secondary" onClick={handleReset} disabled={!hasChanges}>
-          {t('settings.reset')}
-        </button>
-        <button className="settings-btn settings-btn-primary" onClick={handleSave} disabled={!hasChanges}>
-          {t('settings.saveSettings')}
-        </button>
       </div>
     </div>
   );

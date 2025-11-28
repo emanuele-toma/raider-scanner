@@ -26,7 +26,7 @@
   },
   "settings": {
     "title": "Impostazioni",
-    "unsavedChanges": "Modifiche non salvate",
+    "saving": "Salvataggio...",
     "language": "🌐 Lingua",
     "appLanguage": "Lingua App",
     "appLanguageHint": "Lingua dell'interfaccia dell'app",

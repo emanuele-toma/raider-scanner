@@ -557,13 +557,13 @@ function setupIPC(): void {
     return success;
   });
 
-  // Settings panel state - disable hotkeys while settings is open (for recording new hotkeys)
-  ipcMain.on(IPC_CHANNELS.SET_SETTINGS_OPEN, (_event, isOpen: boolean) => {
-    if (isOpen) {
-      console.log('[Main] Settings panel opened - unregistering hotkeys');
+  // Hotkey recording state - disable hotkeys only while recording a new hotkey
+  ipcMain.on(IPC_CHANNELS.SET_HOTKEY_RECORDING, (_event, isRecording: boolean) => {
+    if (isRecording) {
+      console.log('[Main] Hotkey recording started - unregistering hotkeys');
       globalShortcut.unregisterAll();
     } else {
-      console.log('[Main] Settings panel closed - re-registering hotkeys');
+      console.log('[Main] Hotkey recording ended - re-registering hotkeys');
       registerHotkeys();
     }
   });

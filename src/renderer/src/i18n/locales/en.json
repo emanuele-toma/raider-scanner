@@ -26,7 +26,7 @@
   },
   "settings": {
     "title": "Settings",
-    "unsavedChanges": "Unsaved changes",
+    "saving": "Saving...",
     "language": "🌐 Language",
     "appLanguage": "App Language",
     "appLanguageHint": "Language for the app interface",

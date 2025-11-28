@@ -193,14 +193,7 @@ export interface CalibrationState {
 }
 
 // Update status types
-export type UpdateStatus =
-  | 'idle'
-  | 'checking'
-  | 'available'
-  | 'not-available'
-  | 'downloading'
-  | 'downloaded'
-  | 'error';
+export type UpdateStatus = 'idle' | 'checking' | 'available' | 'not-available' | 'downloading' | 'downloaded' | 'error';
 
 export interface UpdateInfo {
   version: string;
@@ -247,8 +240,8 @@ export const IPC_CHANNELS = {
   GET_CALIBRATION: 'get-calibration',
   CALIBRATION_CAPTURE: 'calibration-capture',
 
-  // Settings panel state
-  SET_SETTINGS_OPEN: 'set-settings-open',
+  // Hotkey recording state (blocks hotkeys only during recording)
+  SET_HOTKEY_RECORDING: 'set-hotkey-recording',
 
   // Updates
   CHECK_FOR_UPDATES: 'check-for-updates',

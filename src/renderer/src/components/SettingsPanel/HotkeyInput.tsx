@@ -131,6 +131,8 @@ export function HotkeyInput({ value, onChange, defaultValue, disabled }: HotkeyI
     setIsRecording(false);
     setCurrentKeys(new Set());
     keysRef.current = new Set();
+    // Notify main process to re-register hotkeys
+    window.api.setHotkeyRecording(false);
   }, [keysToAccelerator, onChange, formatHotkeyForDisplay]);
 
   // Add/remove event listeners
@@ -183,6 +185,8 @@ export function HotkeyInput({ value, onChange, defaultValue, disabled }: HotkeyI
     keysRef.current = new Set();
     setCurrentKeys(new Set());
     setIsRecording(true);
+    // Notify main process to unregister hotkeys while recording
+    window.api.setHotkeyRecording(true);
   }, [disabled]);
 
   // Handle blur to cancel recording
@@ -193,6 +197,8 @@ export function HotkeyInput({ value, onChange, defaultValue, disabled }: HotkeyI
     setIsRecording(false);
     setCurrentKeys(new Set());
     keysRef.current = new Set();
+    // Notify main process to re-register hotkeys
+    window.api.setHotkeyRecording(false);
   }, []);
 
   // Handle reset to default
