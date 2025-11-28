@@ -47,7 +47,6 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "prettier": "^3.7.1",
-    "prettier-eslint": "^16.4.2",
     "prettier-plugin-organize-imports": "^4.3.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

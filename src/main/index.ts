@@ -24,8 +24,6 @@ let updateService: UpdateService;
 // Windows
 let mainWindow: BrowserWindow | null = null;
 let overlayWindow: BrowserWindow | null = null;
-let debugBoxWindow: BrowserWindow | null = null;
-let tooltipBoxWindow: BrowserWindow | null = null;
 
 // Logging
 let logPath: string;
@@ -317,139 +315,6 @@ function toggleOverlayTimer(): void {
 }
 
 /**
- * Show debug bounding box for the detected tooltip region
- * Shows two boxes: one for the full tooltip area (orange) and one for the OCR scan region (green)
- */
-function showDebugBox(region: {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  tooltipBounds: { topmost: number; leftmost: number; bottommost: number; rightmost: number };
-}): void {
-  // Close existing debug boxes
-  hideDebugBox();
-
-  const scaleFactor = screen.getPrimaryDisplay().scaleFactor;
-
-  // Calculate the full tooltip region from tooltipBounds (in screen coordinates)
-  const tooltipX = Math.floor(region.tooltipBounds.leftmost / scaleFactor);
-  const tooltipY = Math.floor(region.tooltipBounds.topmost / scaleFactor);
-  const tooltipWidth = Math.floor((region.tooltipBounds.rightmost - region.tooltipBounds.leftmost) / scaleFactor);
-  const tooltipHeight = Math.floor((region.tooltipBounds.bottommost - region.tooltipBounds.topmost) / scaleFactor);
-
-  // Create tooltip region box (orange - full detected color region)
-  tooltipBoxWindow = new BrowserWindow({
-    x: tooltipX,
-    y: tooltipY,
-    width: Math.max(tooltipWidth, 10),
-    height: Math.max(tooltipHeight, 10),
-    show: false,
-    frame: false,
-    transparent: true,
-    alwaysOnTop: true,
-    skipTaskbar: true,
-    resizable: false,
-    focusable: false,
-    hasShadow: false,
-    type: 'toolbar',
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-    },
-  });
-
-  tooltipBoxWindow.setIgnoreMouseEvents(true, { forward: true });
-
-  const tooltipHtml = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; height: 100%; background: transparent; overflow: hidden; }
-        .box {
-          width: 100%;
-          height: 100%;
-          border: 2px dashed #ff9900;
-          background: rgba(255, 153, 0, 0.05);
-        }
-      </style>
-    </head>
-    <body><div class="box"></div></body>
-    </html>
-  `;
-
-  tooltipBoxWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(tooltipHtml)}`);
-  tooltipBoxWindow.once('ready-to-show', () => tooltipBoxWindow?.show());
-
-  // Create OCR scan region box (green - the actual area being scanned)
-  debugBoxWindow = new BrowserWindow({
-    x: region.x,
-    y: region.y,
-    width: region.width,
-    height: region.height,
-    show: false,
-    frame: false,
-    transparent: true,
-    alwaysOnTop: true,
-    skipTaskbar: true,
-    resizable: false,
-    focusable: false,
-    hasShadow: false,
-    type: 'toolbar',
-    webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-    },
-  });
-
-  debugBoxWindow.setIgnoreMouseEvents(true, { forward: true });
-
-  const scanHtml = `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; height: 100%; background: transparent; overflow: hidden; }
-        .box {
-          width: 100%;
-          height: 100%;
-          border: 3px solid #00ff00;
-          background: rgba(0, 255, 0, 0.15);
-          box-shadow: 0 0 10px #00ff00, inset 0 0 10px rgba(0, 255, 0, 0.2);
-        }
-      </style>
-    </head>
-    <body><div class="box"></div></body>
-    </html>
-  `;
-
-  debugBoxWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(scanHtml)}`);
-  debugBoxWindow.once('ready-to-show', () => debugBoxWindow?.show());
-
-  // Auto-hide after 2 seconds
-  setTimeout(() => {
-    hideDebugBox();
-  }, 2000);
-}
-
-/**
- * Hide the debug bounding boxes
- */
-function hideDebugBox(): void {
-  if (debugBoxWindow) {
-    debugBoxWindow.close();
-    debugBoxWindow = null;
-  }
-  if (tooltipBoxWindow) {
-    tooltipBoxWindow.close();
-    tooltipBoxWindow = null;
-  }
-}
-
-/**
  * Perform a scan at current cursor position
  */
 async function performScan(): Promise<void> {
@@ -471,11 +336,8 @@ async function performScan(): Promise<void> {
   }
 
   try {
-    // Perform OCR scan with callback to show bounding box immediately when region is detected
-    const ocrResult = await ocrService.scan(detectedRegion => {
-      // Show debug bounding box as soon as region is detected (before OCR)
-      showDebugBox(detectedRegion);
-    });
+    // Perform OCR scan
+    const ocrResult = await ocrService.scan();
 
     if (!ocrResult || !ocrResult.text) {
       console.log('[Main] No text detected');

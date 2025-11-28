@@ -44,7 +44,6 @@ const GAME_TO_TESSERACT_LANG: Record<string, string> = {
 function getCharWhitelist(tesseractLang: string): string {
   // Base Latin characters
   const latinBase = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 -'.,()[]";
-
   switch (tesseractLang) {
     case 'deu': // German - add umlauts and ß
       return latinBase + 'ÄÖÜäöüß';
@@ -236,132 +235,275 @@ export class OCRService {
     );
   }
 
+  // Corner L-shape dimensions (thin borders)
+  private readonly L_WIDTH = 2; // Width of the L-shape lines
+  private readonly L_LENGTH = 100; // Length of each L segment
+
   /**
-   * Check if a horizontal rectangle of tooltip color exists at position
-   * Rectangle: 490px wide x 15px tall
+   * Check for Top-Left corner L-shape: ┌
+   * Horizontal segment goes right, vertical segment goes down
    */
-  private hasHorizontalBar(imageData: Buffer, width: number, height: number, startX: number, startY: number): boolean {
-    const BAR_WIDTH = 490;
-    const BAR_HEIGHT = 15;
-
+  private hasTopLeftCorner(imageData: Buffer, width: number, height: number, x: number, y: number): boolean {
     // Check bounds
-    if (startX + BAR_WIDTH > width || startY + BAR_HEIGHT > height) {
-      return false;
-    }
+    if (x + this.L_LENGTH > width || y + this.L_LENGTH > height) return false;
 
-    // Check all pixels in the rectangle
-    for (let y = startY; y < startY + BAR_HEIGHT; y++) {
-      for (let x = startX; x < startX + BAR_WIDTH; x++) {
-        const idx = (y * width + x) * 4;
-        const r = imageData[idx];
-        const g = imageData[idx + 1];
-        const b = imageData[idx + 2];
-
-        if (!this.isTooltipColor(r, g, b)) {
+    // Check horizontal segment (going right)
+    for (let dx = 0; dx < this.L_LENGTH; dx++) {
+      for (let dy = 0; dy < this.L_WIDTH; dy++) {
+        const idx = ((y + dy) * width + (x + dx)) * 4;
+        if (!this.isTooltipColor(imageData[idx], imageData[idx + 1], imageData[idx + 2])) {
           return false;
         }
       }
     }
-    return true;
-  }
 
-  /**
-   * Check if a vertical rectangle of tooltip color exists at position
-   * Rectangle: 25px wide x 100px tall
-   */
-  private hasVerticalBar(imageData: Buffer, width: number, height: number, startX: number, startY: number): boolean {
-    const BAR_WIDTH = 25;
-    const BAR_HEIGHT = 100;
-
-    // Check bounds
-    if (startX + BAR_WIDTH > width || startY + BAR_HEIGHT > height) {
-      return false;
-    }
-
-    // Check all pixels in the rectangle
-    for (let y = startY; y < startY + BAR_HEIGHT; y++) {
-      for (let x = startX; x < startX + BAR_WIDTH; x++) {
-        const idx = (y * width + x) * 4;
-        const r = imageData[idx];
-        const g = imageData[idx + 1];
-        const b = imageData[idx + 2];
-
-        if (!this.isTooltipColor(r, g, b)) {
+    // Check vertical segment (going down)
+    for (let dy = 0; dy < this.L_LENGTH; dy++) {
+      for (let dx = 0; dx < this.L_WIDTH; dx++) {
+        const idx = ((y + dy) * width + (x + dx)) * 4;
+        if (!this.isTooltipColor(imageData[idx], imageData[idx + 1], imageData[idx + 2])) {
           return false;
         }
       }
     }
+
     return true;
   }
 
   /**
-   * Find tooltip by detecting an "L" shape pattern:
-   * - Horizontal bar: 490px wide x 15px tall
-   * - Vertical bar: 25px wide x 100px tall
-   * Both bars share the same top-left corner.
-   *
-   * Once found, the text region is calculated as:
-   * - Top-left: origin + (25px right, 66px down)
-   * - Bottom-right: top-left + (470px right, 30px down)
+   * Check for Top-Right corner L-shape: ┐
+   * Horizontal segment goes left, vertical segment goes down
+   */
+  private hasTopRightCorner(imageData: Buffer, width: number, height: number, x: number, y: number): boolean {
+    // Check bounds (x is the right edge)
+    if (x - this.L_LENGTH < 0 || y + this.L_LENGTH > height) return false;
+
+    // Check horizontal segment (going left from x)
+    for (let dx = 0; dx < this.L_LENGTH; dx++) {
+      for (let dy = 0; dy < this.L_WIDTH; dy++) {
+        const idx = ((y + dy) * width + (x - dx)) * 4;
+        if (!this.isTooltipColor(imageData[idx], imageData[idx + 1], imageData[idx + 2])) {
+          return false;
+        }
+      }
+    }
+
+    // Check vertical segment (going down from top-right)
+    for (let dy = 0; dy < this.L_LENGTH; dy++) {
+      for (let dx = 0; dx < this.L_WIDTH; dx++) {
+        const idx = ((y + dy) * width + (x - dx)) * 4;
+        if (!this.isTooltipColor(imageData[idx], imageData[idx + 1], imageData[idx + 2])) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Check for Bottom-Left corner L-shape: └
+   * Horizontal segment goes right, vertical segment goes up
+   */
+  private hasBottomLeftCorner(imageData: Buffer, width: number, _height: number, x: number, y: number): boolean {
+    // Check bounds (y is the bottom edge)
+    if (x + this.L_LENGTH > width || y - this.L_LENGTH < 0) return false;
+
+    // Check horizontal segment (going right)
+    for (let dx = 0; dx < this.L_LENGTH; dx++) {
+      for (let dy = 0; dy < this.L_WIDTH; dy++) {
+        const idx = ((y - dy) * width + (x + dx)) * 4;
+        if (!this.isTooltipColor(imageData[idx], imageData[idx + 1], imageData[idx + 2])) {
+          return false;
+        }
+      }
+    }
+
+    // Check vertical segment (going up)
+    for (let dy = 0; dy < this.L_LENGTH; dy++) {
+      for (let dx = 0; dx < this.L_WIDTH; dx++) {
+        const idx = ((y - dy) * width + (x + dx)) * 4;
+        if (!this.isTooltipColor(imageData[idx], imageData[idx + 1], imageData[idx + 2])) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Check for Bottom-Right corner L-shape: ┘
+   * Horizontal segment goes left, vertical segment goes up
+   */
+  private hasBottomRightCorner(imageData: Buffer, width: number, _height: number, x: number, y: number): boolean {
+    // Check bounds (x is right edge, y is bottom edge)
+    if (x - this.L_LENGTH < 0 || y - this.L_LENGTH < 0) return false;
+
+    // Check horizontal segment (going left)
+    for (let dx = 0; dx < this.L_LENGTH; dx++) {
+      for (let dy = 0; dy < this.L_WIDTH; dy++) {
+        const idx = ((y - dy) * width + (x - dx)) * 4;
+        if (!this.isTooltipColor(imageData[idx], imageData[idx + 1], imageData[idx + 2])) {
+          return false;
+        }
+      }
+    }
+
+    // Check vertical segment (going up)
+    for (let dy = 0; dy < this.L_LENGTH; dy++) {
+      for (let dx = 0; dx < this.L_WIDTH; dx++) {
+        const idx = ((y - dy) * width + (x - dx)) * 4;
+        if (!this.isTooltipColor(imageData[idx], imageData[idx + 1], imageData[idx + 2])) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Find all four corners of the tooltip frame
+   * Returns the bounding rectangle if all corners are found
+   */
+  private findTooltipCorners(
+    imageData: Buffer,
+    width: number,
+    height: number,
+  ): { topLeft: { x: number; y: number }; bottomRight: { x: number; y: number } } | null {
+    const SCAN_STEP = 4; // Scan every 4 pixels for performance
+    const corners: {
+      topLeft?: { x: number; y: number };
+      topRight?: { x: number; y: number };
+      bottomLeft?: { x: number; y: number };
+      bottomRight?: { x: number; y: number };
+    } = {};
+
+    // Scan for top-left corner (start from top-left of screen)
+    outerTL: for (let y = 0; y < height - this.L_LENGTH; y += SCAN_STEP) {
+      for (let x = 0; x < width - this.L_LENGTH; x += SCAN_STEP) {
+        const idx = (y * width + x) * 4;
+        if (this.isTooltipColor(imageData[idx], imageData[idx + 1], imageData[idx + 2])) {
+          if (this.hasTopLeftCorner(imageData, width, height, x, y)) {
+            corners.topLeft = { x, y };
+            console.log(`[OCRService] Found top-left corner at (${x}, ${y})`);
+            break outerTL;
+          }
+        }
+      }
+    }
+
+    if (!corners.topLeft) {
+      console.log('[OCRService] Top-left corner not found');
+      return null;
+    }
+
+    // Scan for top-right corner (start from top-right, moving left and down from top-left's Y)
+    outerTR: for (
+      let y = corners.topLeft.y;
+      y < Math.min(corners.topLeft.y + 50, height - this.L_LENGTH);
+      y += SCAN_STEP
+    ) {
+      for (let x = width - 1; x > corners.topLeft.x + this.L_LENGTH; x -= SCAN_STEP) {
+        const idx = (y * width + x) * 4;
+        if (this.isTooltipColor(imageData[idx], imageData[idx + 1], imageData[idx + 2])) {
+          if (this.hasTopRightCorner(imageData, width, height, x, y)) {
+            corners.topRight = { x, y };
+            console.log(`[OCRService] Found top-right corner at (${x}, ${y})`);
+            break outerTR;
+          }
+        }
+      }
+    }
+
+    if (!corners.topRight) {
+      console.log('[OCRService] Top-right corner not found');
+      return null;
+    }
+
+    // Scan for bottom-left corner (start from bottom, around top-left's X)
+    outerBL: for (let y = height - 1; y > corners.topLeft.y + this.L_LENGTH; y -= SCAN_STEP) {
+      for (let x = corners.topLeft.x; x < Math.min(corners.topLeft.x + 50, width - this.L_LENGTH); x += SCAN_STEP) {
+        const idx = (y * width + x) * 4;
+        if (this.isTooltipColor(imageData[idx], imageData[idx + 1], imageData[idx + 2])) {
+          if (this.hasBottomLeftCorner(imageData, width, height, x, y)) {
+            corners.bottomLeft = { x, y };
+            console.log(`[OCRService] Found bottom-left corner at (${x}, ${y})`);
+            break outerBL;
+          }
+        }
+      }
+    }
+
+    if (!corners.bottomLeft) {
+      console.log('[OCRService] Bottom-left corner not found');
+      return null;
+    }
+
+    // Scan for bottom-right corner (around bottom-left's Y and top-right's X)
+    outerBR: for (let y = corners.bottomLeft.y; y > corners.bottomLeft.y - 50 && y > this.L_LENGTH; y -= SCAN_STEP) {
+      for (let x = corners.topRight.x; x > corners.topRight.x - 50 && x > this.L_LENGTH; x -= SCAN_STEP) {
+        const idx = (y * width + x) * 4;
+        if (this.isTooltipColor(imageData[idx], imageData[idx + 1], imageData[idx + 2])) {
+          if (this.hasBottomRightCorner(imageData, width, height, x, y)) {
+            corners.bottomRight = { x, y };
+            console.log(`[OCRService] Found bottom-right corner at (${x}, ${y})`);
+            break outerBR;
+          }
+        }
+      }
+    }
+
+    if (!corners.bottomRight) {
+      console.log('[OCRService] Bottom-right corner not found');
+      return null;
+    }
+
+    console.log('[OCRService] All four corners found!');
+    return {
+      topLeft: corners.topLeft,
+      bottomRight: corners.bottomRight,
+    };
+  }
+
+  /**
+   * Find tooltip by detecting four corner L-shapes
+   * Each corner is an L with 2px width and 100px length segments
    */
   private findTooltipBounds(imageData: Buffer, width: number, height: number): TooltipDetectionResult | null {
-    // Text region offsets from the L-shape origin
-    const TEXT_OFFSET_X = 25;
-    const TEXT_OFFSET_Y = 66;
-    const TEXT_WIDTH = 470;
-    const TEXT_HEIGHT = 30;
+    const corners = this.findTooltipCorners(imageData, width, height);
 
-    // Scan through the image looking for the L-shape pattern
-    // We can skip some pixels for performance since we're looking for a large pattern
-    const SCAN_STEP = 2;
-
-    for (let y = 0; y < height - 100; y += SCAN_STEP) {
-      for (let x = 0; x < width - 490; x += SCAN_STEP) {
-        const idx = (y * width + x) * 4;
-        const r = imageData[idx];
-        const g = imageData[idx + 1];
-        const b = imageData[idx + 2];
-
-        // Quick check: is this pixel the tooltip color?
-        if (!this.isTooltipColor(r, g, b)) {
-          continue;
-        }
-
-        // Check for the L-shape pattern at this position
-        if (
-          this.hasHorizontalBar(imageData, width, height, x, y) &&
-          this.hasVerticalBar(imageData, width, height, x, y)
-        ) {
-          console.log(`[OCRService] L-shape pattern found at: (${x}, ${y})`);
-
-          // Calculate bounds based on the L-shape
-          const bounds: TooltipBounds = {
-            topmost: y,
-            leftmost: x,
-            bottommost: y + 100, // Vertical bar height
-            rightmost: x + 490, // Horizontal bar width
-            matchingPixels: 490 * 15 + 25 * 100, // Approximate pixel count
-          };
-
-          // Calculate text region
-          const textRegion: TextRegion = {
-            x: x + TEXT_OFFSET_X,
-            y: y + TEXT_OFFSET_Y,
-            width: TEXT_WIDTH,
-            height: TEXT_HEIGHT,
-          };
-
-          console.log(
-            `[OCRService] Text region calculated: x=${textRegion.x}, y=${textRegion.y}, w=${TEXT_WIDTH}, h=${TEXT_HEIGHT}`,
-          );
-
-          return { bounds, textRegion };
-        }
-      }
+    if (!corners) {
+      return null;
     }
 
-    console.log('[OCRService] L-shape pattern not found');
-    return null;
+    const { topLeft, bottomRight } = corners;
+
+    // Calculate padding inside the frame (skip the border)
+    const PADDING = 10;
+
+    const bounds: TooltipBounds = {
+      topmost: topLeft.y,
+      leftmost: topLeft.x,
+      bottommost: bottomRight.y,
+      rightmost: bottomRight.x,
+      matchingPixels: 0,
+    };
+
+    // The entire interior region is the text area
+    const textRegion: TextRegion = {
+      x: topLeft.x + PADDING,
+      y: topLeft.y + PADDING,
+      width: bottomRight.x - topLeft.x - PADDING * 2,
+      height: bottomRight.y - topLeft.y - PADDING * 2,
+    };
+
+    console.log(
+      `[OCRService] Tooltip region: x=${textRegion.x}, y=${textRegion.y}, w=${textRegion.width}, h=${textRegion.height}`,
+    );
+
+    return { bounds, textRegion };
   }
 
   /**
@@ -478,7 +620,7 @@ export class OCRService {
   }
 
   /**
-   * Perform OCR on an image buffer
+   * Perform OCR on an image buffer and return text with largest font size
    */
   async recognize(imageBuffer: Buffer, width: number, height: number): Promise<{ text: string; confidence: number }> {
     if (!this.worker || !this.isInitialized) {
@@ -491,16 +633,115 @@ export class OCRService {
       // Preprocess image
       const processedImage = await this.preprocessImage(imageBuffer, width, height);
 
-      // Perform recognition
-      const result = await this.worker.recognize(processedImage);
+      // Perform recognition with word-level data
+      const result = await this.worker.recognize(processedImage, undefined, {
+        blocks: true,
+        text: true,
+        layoutBlocks: true,
+      });
 
       console.log(`[OCRService] Recognition completed in ${Date.now() - startTime}ms`);
-      console.log(`[OCRService] Confidence: ${result.data.confidence}%`);
-      console.log(`[OCRService] Raw text: "${result.data.text.trim()}"`);
+      console.log(`[OCRService] Full text: "${result.data.text.trim()}"`);
+
+      // Navigate the Tesseract structure: blocks -> paragraphs -> lines -> words
+      const data = result.data;
+      const blocks = data.blocks || [];
+
+      console.log(`[OCRService] Found ${blocks.length} blocks`);
+
+      if (blocks.length === 0) {
+        console.log('[OCRService] No blocks detected, using full text');
+        return { text: result.data.text.trim(), confidence: result.data.confidence };
+      }
+
+      // Collect all lines with font size calculated from word heights (more accurate than line bbox)
+      interface LineWithSize {
+        text: string;
+        confidence: number;
+        fontSize: number; // Average word height (actual font size)
+        y: number; // vertical position
+      }
+
+      const allLines: LineWithSize[] = [];
+
+      for (const block of blocks) {
+        const paragraphs = block.paragraphs || [];
+        for (const paragraph of paragraphs) {
+          const lines = paragraph.lines || [];
+          for (const line of lines) {
+            const words = line.words || [];
+            const lineText = line.text?.trim() || '';
+            const lineY = line.bbox.y0;
+
+            if (lineText.length > 0 && words.length > 0) {
+              // Calculate average word height as font size proxy
+              // This is more accurate than line bbox which includes spacing
+              const wordHeights = words.map((w: { bbox: { y1: number; y0: number } }) => w.bbox.y1 - w.bbox.y0);
+              const avgWordHeight = wordHeights.reduce((a: number, b: number) => a + b, 0) / wordHeights.length;
+
+              allLines.push({
+                text: lineText,
+                confidence: line.confidence || 0,
+                fontSize: avgWordHeight,
+                y: lineY,
+              });
+
+              console.log(`[OCRService] Line: "${lineText}" avgWordHeight=${avgWordHeight.toFixed(1)}px y=${lineY}`);
+            }
+          }
+        }
+      }
+
+      console.log(`[OCRService] Found ${allLines.length} lines total`);
+
+      if (allLines.length === 0) {
+        return { text: result.data.text.trim(), confidence: result.data.confidence };
+      }
+
+      // Sort all lines by Y position
+      const sortedByY = [...allLines].sort((a, b) => a.y - b.y);
+
+      // Only consider the first half of lines (title is always at the top)
+      const halfIndex = Math.ceil(sortedByY.length / 2);
+      const topHalfLines = sortedByY.slice(0, halfIndex);
+
+      console.log(`[OCRService] Considering only first ${halfIndex} of ${allLines.length} lines`);
+
+      // Find the line with the largest font size in the top half
+      const sortedByFontSize = [...topHalfLines].sort((a, b) => b.fontSize - a.fontSize);
+      const maxFontSize = sortedByFontSize[0].fontSize;
+      const largestLine = sortedByFontSize[0];
+
+      // Find the index of the largest line in Y-sorted array
+      const largestLineIndex = topHalfLines.findIndex(l => l === largestLine);
+
+      // Collect consecutive lines with the exact same font size (rounded to nearest pixel)
+      const roundedMaxFontSize = Math.round(maxFontSize);
+      const titleLines: typeof allLines = [largestLine];
+
+      // Check lines immediately after the largest line
+      for (let i = largestLineIndex + 1; i < topHalfLines.length; i++) {
+        const nextLine = topHalfLines[i];
+        const roundedNextFontSize = Math.round(nextLine.fontSize);
+
+        if (roundedNextFontSize === roundedMaxFontSize) {
+          titleLines.push(nextLine);
+        } else {
+          break; // Stop at first line with different font size
+        }
+      }
+
+      // Sort title lines by Y position and combine
+      titleLines.sort((a, b) => a.y - b.y);
+      const titleText = titleLines.map(l => l.text).join(' ');
+      const avgConfidence = titleLines.reduce((sum, l) => sum + l.confidence, 0) / titleLines.length;
+
+      console.log(`[OCRService] Max font size: ${maxFontSize.toFixed(1)}px (rounded: ${roundedMaxFontSize}px)`);
+      console.log(`[OCRService] Title lines (${titleLines.length}): "${titleText}"`);
 
       return {
-        text: result.data.text.trim(),
-        confidence: result.data.confidence,
+        text: titleText.trim(),
+        confidence: avgConfidence,
       };
     } catch (error) {
       console.error('[OCRService] Recognition failed:', error);
