@@ -10,6 +10,7 @@
     "quests": "Quests",
     "trades": "Handel",
     "search": "Suche",
+    "arcs": "ARCs",
     "settings": "Einstellungen",
     "quickActions": "Schnellaktionen",
     "scanNow": "Jetzt Scannen",
@@ -21,6 +22,20 @@
   "searchPanel": {
     "title": "Gegenstandsdatenbank",
     "description": "Durchsuche die ARC Raiders Datenbank nach Herstellungsrezepten, Quest-Anforderungen und Handelsinformationen."
+  },
+  "arcs": {
+    "title": "ARC Feinde",
+    "description": "Durchsuche Informationen über ARC-Feindtypen, ihre Schwächen und Item-Drops.",
+    "selectArc": "Wähle einen ARC für Details",
+    "backToList": "Zurück zu ARCs",
+    "overview": "Übersicht",
+    "weakness": "Schwäche",
+    "xp": "Erfahrung",
+    "destroyXp": "Zerstören",
+    "lootXp": "Beute",
+    "totalXp": "Gesamt",
+    "foundOn": "Standorte",
+    "drops": "Drops"
   },
   "settings": {
     "title": "Einstellungen",
@@ -62,6 +77,7 @@
     "hideoutUpgrades": "Versteck-Upgrades",
     "breakdown": "Aufschlüsselung",
     "obtainedFrom": "Erhalten Von",
+    "droppedBy": "Erhalten von ARCs",
     "recycle": "Recyceln",
     "salvage": "Bergen",
     "foundIn": "Gefunden in",

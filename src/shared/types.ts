@@ -97,6 +97,21 @@ export interface HideoutStation {
   levels: HideoutLevelRequirement[];
 }
 
+// ARC Bot/Enemy type
+export interface Bot {
+  id: string;
+  name: string;
+  image: string;
+  type: string;
+  threat: string;
+  description: string;
+  weakness: string;
+  maps: string[];
+  destroyXp: number;
+  lootXp: number;
+  drops: string[];
+}
+
 // Enriched item with all relationships
 export interface EnrichedItem extends Item {
   // Items this item is used to craft
@@ -109,6 +124,16 @@ export interface EnrichedItem extends Item {
   hideoutUses: HideoutUse[];
   // Items that produce this item when recycled/salvaged
   obtainedFrom: ObtainedFrom[];
+  // ARCs that drop this item
+  droppedBy: DroppedBy[];
+}
+
+// ARC that drops an item
+export interface DroppedBy {
+  botId: string;
+  botName: string;
+  botImage: string;
+  threat: string;
 }
 
 export interface CraftingUse {

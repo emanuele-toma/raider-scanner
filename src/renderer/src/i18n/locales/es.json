@@ -10,6 +10,7 @@
     "quests": "Misiones",
     "trades": "Intercambios",
     "search": "Buscar",
+    "arcs": "ARCs",
     "settings": "Ajustes",
     "quickActions": "Acciones Rápidas",
     "scanNow": "Escanear Ahora",
@@ -21,6 +22,20 @@
   "searchPanel": {
     "title": "Base de Datos",
     "description": "Busca en la base de datos de ARC Raiders para encontrar recetas, requisitos de misiones e información de intercambio."
+  },
+  "arcs": {
+    "title": "Enemigos ARC",
+    "description": "Explora información sobre tipos de enemigos ARC, sus debilidades y drops de objetos.",
+    "selectArc": "Selecciona un ARC para ver detalles",
+    "backToList": "Volver a ARCs",
+    "overview": "Resumen",
+    "weakness": "Debilidad",
+    "xp": "Experiencia",
+    "destroyXp": "Destruir",
+    "lootXp": "Botín",
+    "totalXp": "Total",
+    "foundOn": "Ubicaciones",
+    "drops": "Drops"
   },
   "settings": {
     "title": "Ajustes",
@@ -62,6 +77,7 @@
     "hideoutUpgrades": "Mejoras del Refugio",
     "breakdown": "Desglose",
     "obtainedFrom": "Obtenido De",
+    "droppedBy": "Obtenido de ARCs",
     "recycle": "Reciclar",
     "salvage": "Recuperar",
     "foundIn": "Encontrado en",

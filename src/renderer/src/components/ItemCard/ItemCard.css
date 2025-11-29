@@ -203,6 +203,53 @@
   font-size: 0.7rem;
 }
 
+/* Clickable item link for navigation */
+.list-item-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--speranza-cyan);
+  font-weight: 500;
+  font-size: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: color var(--transition-fast);
+}
+
+.list-item-link:hover {
+  color: var(--speranza-purple);
+  text-decoration: underline;
+}
+
+/* Threat level colors for dropped by section */
+.list-item-threat {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.list-item-threat.threat-low {
+  color: #4ade80;
+}
+
+.list-item-threat.threat-moderate {
+  color: #facc15;
+}
+
+.list-item-threat.threat-high {
+  color: #f97316;
+}
+
+.list-item-threat.threat-critical {
+  color: #ef4444;
+}
+
+.list-item-threat.threat-extreme {
+  color: #a855f7;
+}
+
 .section-list-more {
   padding: var(--spacing-xs) 0;
   color: var(--speranza-purple);

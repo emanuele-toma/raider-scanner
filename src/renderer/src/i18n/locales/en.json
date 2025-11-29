@@ -10,6 +10,7 @@
     "quests": "Quests",
     "trades": "Trades",
     "search": "Search",
+    "arcs": "ARCs",
     "settings": "Settings",
     "quickActions": "Quick Actions",
     "scanNow": "Scan Now",
@@ -23,6 +24,20 @@
     "description": "Search the ARC Raiders item database to find crafting recipes, quest requirements, and trade information.",
     "recentScans": "Recent Scans",
     "clearHistory": "Clear history"
+  },
+  "arcs": {
+    "title": "ARC Enemies",
+    "description": "Browse information about ARC enemy types, their weaknesses, and item drops.",
+    "selectArc": "Select an ARC to view details",
+    "backToList": "Back to ARCs",
+    "overview": "Overview",
+    "weakness": "Weakness",
+    "xp": "Experience",
+    "destroyXp": "Destroy",
+    "lootXp": "Loot",
+    "totalXp": "Total",
+    "foundOn": "Locations",
+    "drops": "Drops"
   },
   "settings": {
     "title": "Settings",
@@ -66,6 +81,7 @@
     "hideoutUpgrades": "Hideout Upgrades",
     "breakdown": "Breakdown",
     "obtainedFrom": "Obtained From",
+    "droppedBy": "Dropped By ARCs",
     "recycle": "Recycle",
     "salvage": "Salvage",
     "foundIn": "Found in",

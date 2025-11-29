@@ -15,6 +15,7 @@ interface ItemCardProps {
   onClose?: () => void;
   maxWidth?: number;
   appLanguage?: string;
+  onNavigateToBot?: (botId: string) => void;
 }
 
 // Track which sections are expanded
@@ -24,6 +25,7 @@ interface ExpandedSections {
   trades: boolean;
   hideout: boolean;
   obtainedFrom: boolean;
+  droppedBy: boolean;
 }
 
 const DEFAULT_VISIBLE_ITEMS = 5;
@@ -61,6 +63,7 @@ export default function ItemCard({
   onClose,
   maxWidth,
   appLanguage = 'en',
+  onNavigateToBot,
 }: ItemCardProps): React.JSX.Element {
   const { t } = useTranslation();
   const rarityClass = getRarityClass(item.rarity);
@@ -71,6 +74,7 @@ export default function ItemCard({
     trades: false,
     hideout: false,
     obtainedFrom: false,
+    droppedBy: false,
   });
 
   // Toggle section expansion
@@ -370,6 +374,37 @@ export default function ItemCard({
                 {expanded.obtainedFrom
                   ? t('itemCard.showLess')
                   : t('itemCard.more', { count: item.obtainedFrom.length - DEFAULT_VISIBLE_ITEMS })}
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
+
+      {/* Dropped By ARCs */}
+      {item.droppedBy && item.droppedBy.length > 0 && (
+        <div className="item-card-section">
+          <h3 className="section-title">
+            <span className="section-icon">🤖</span>
+            {t('itemCard.droppedBy')}
+          </h3>
+          <ul className="section-list">
+            {(expanded.droppedBy ? item.droppedBy : item.droppedBy.slice(0, DEFAULT_VISIBLE_ITEMS)).map((arc, i) => (
+              <li key={i} className="section-list-item">
+                {onNavigateToBot ? (
+                  <button className="list-item-link" onClick={() => onNavigateToBot(arc.botId)}>
+                    {arc.botName}
+                  </button>
+                ) : (
+                  <span className="list-item-name">{arc.botName}</span>
+                )}
+                <span className={`list-item-threat threat-${arc.threat.toLowerCase()}`}>{arc.threat}</span>
+              </li>
+            ))}
+            {item.droppedBy.length > DEFAULT_VISIBLE_ITEMS && (
+              <li className="section-list-more" onClick={() => toggleSection('droppedBy')}>
+                {expanded.droppedBy
+                  ? t('itemCard.showLess')
+                  : t('itemCard.more', { count: item.droppedBy.length - DEFAULT_VISIBLE_ITEMS })}
               </li>
             )}
           </ul>

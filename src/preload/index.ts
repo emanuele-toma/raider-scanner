@@ -37,10 +37,14 @@ const api = {
   resizeOverlay: (width: number, height: number): void => ipcRenderer.send('resize-overlay', width, height),
 
   // Data
-  getDataStats: (): Promise<{ items: number; quests: number; trades: number; hideoutStations: number }> =>
+  getDataStats: (): Promise<{ items: number; quests: number; trades: number; hideoutStations: number; bots: number }> =>
     ipcRenderer.invoke('get-data-stats'),
 
   getItem: (itemId: string): Promise<unknown> => ipcRenderer.invoke('get-item', itemId),
+
+  getBot: (botId: string): Promise<unknown> => ipcRenderer.invoke('get-bot', botId),
+
+  getAllBots: (): Promise<unknown[]> => ipcRenderer.invoke('get-all-bots'),
 
   // Calibration
   getCalibration: (): Promise<CalibrationSettings> => ipcRenderer.invoke(IPC_CHANNELS.GET_CALIBRATION),

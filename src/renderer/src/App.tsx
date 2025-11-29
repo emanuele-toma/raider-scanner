@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { AppSettings, EnrichedItem } from '../../shared/types';
 import './App.css';
+import { ARCsPanel } from './components/ARCsPanel/ARCsPanel';
 import { CalibrationPanel } from './components/CalibrationPanel';
 import { ItemCard } from './components/ItemCard';
 import { SearchBar } from './components/SearchBar';
@@ -19,6 +20,7 @@ interface DataStats {
   quests: number;
   trades: number;
   hideoutStations: number;
+  bots: number;
 }
 
 interface ScanHistoryEntry {
@@ -45,7 +47,8 @@ function App(): React.JSX.Element {
   const [dataStats, setDataStats] = useState<DataStats | null>(null);
   const [selectedItem, setSelectedItem] = useState<EnrichedItem | null>(null);
   const [scanHistory, setScanHistory] = useState<ScanHistoryEntry[]>([]);
-  const [activeTab, setActiveTab] = useState<'search' | 'settings'>('search');
+  const [activeTab, setActiveTab] = useState<'search' | 'arcs' | 'settings'>('search');
+  const [selectedBotId, setSelectedBotId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Load initial data
@@ -101,6 +104,28 @@ function App(): React.JSX.Element {
   // Handle item selection
   const handleSelectItem = useCallback((item: EnrichedItem) => {
     setSelectedItem(item);
+  }, []);
+
+  // Handle navigating to a bot
+  const handleNavigateToBot = useCallback((botId: string) => {
+    setSelectedBotId(botId);
+    setActiveTab('arcs');
+  }, []);
+
+  // Handle navigating to an item from ARCs panel
+  const handleNavigateToItem = useCallback(async (itemId: string) => {
+    try {
+      setIsLoading(true);
+      const item = await window.api.getItem(itemId);
+      if (item) {
+        setSelectedItem(item);
+        setActiveTab('search');
+      }
+    } catch (error) {
+      console.error('Failed to navigate to item:', error);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   // Handle settings change
@@ -168,6 +193,16 @@ function App(): React.JSX.Element {
               <span className="nav-text">{t('sidebar.search')}</span>
             </button>
             <button
+              className={`nav-btn ${activeTab === 'arcs' ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab('arcs');
+                setSelectedBotId(null);
+              }}
+            >
+              <span className="nav-icon">🤖</span>
+              <span className="nav-text">{t('sidebar.arcs')}</span>
+            </button>
+            <button
               className={`nav-btn ${activeTab === 'settings' ? 'active' : ''}`}
               onClick={() => setActiveTab('settings')}
             >
@@ -204,6 +239,7 @@ function App(): React.JSX.Element {
                     item={selectedItem}
                     onClose={() => setSelectedItem(null)}
                     appLanguage={settings?.appLanguage}
+                    onNavigateToBot={handleNavigateToBot}
                   />
                 </div>
               )}
@@ -244,6 +280,14 @@ function App(): React.JSX.Element {
                 </div>
               )}
             </div>
+          )}
+
+          {activeTab === 'arcs' && (
+            <ARCsPanel
+              selectedBotId={selectedBotId}
+              onClose={() => setSelectedBotId(null)}
+              onNavigateToItem={handleNavigateToItem}
+            />
           )}
 
           {activeTab === 'settings' && settings && (

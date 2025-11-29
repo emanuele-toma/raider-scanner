@@ -544,6 +544,16 @@ function setupIPC(): void {
     return dataService.getItem(itemId);
   });
 
+  // Get bot by ID
+  ipcMain.handle('get-bot', (_event, botId: string) => {
+    return dataService.getBot(botId);
+  });
+
+  // Get all bots
+  ipcMain.handle('get-all-bots', () => {
+    return dataService.getAllBots();
+  });
+
   // Calibration handlers
   ipcMain.handle(IPC_CHANNELS.GET_CALIBRATION, () => {
     return calibrationService.getSettings();

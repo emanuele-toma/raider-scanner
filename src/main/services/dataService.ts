@@ -6,7 +6,9 @@
 import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 import type {
+  Bot,
   CraftingUse,
+  DroppedBy,
   EnrichedItem,
   HideoutStation,
   HideoutUse,
@@ -23,6 +25,7 @@ export class DataService {
   private quests: Map<string, Quest> = new Map();
   private trades: Trade[] = [];
   private hideoutStations: Map<string, HideoutStation> = new Map();
+  private bots: Map<string, Bot> = new Map();
   private enrichedItems: Map<string, EnrichedItem> = new Map();
   private dataPath: string;
   private isLoaded = false;
@@ -46,6 +49,7 @@ export class DataService {
       await this.loadQuests();
       await this.loadTrades();
       await this.loadHideoutStations();
+      await this.loadBots();
 
       // Build enriched items with relationships
       this.buildEnrichedItems();
@@ -56,6 +60,7 @@ export class DataService {
       console.log(`[DataService] Loaded ${this.quests.size} quests`);
       console.log(`[DataService] Loaded ${this.trades.length} trades`);
       console.log(`[DataService] Loaded ${this.hideoutStations.size} hideout stations`);
+      console.log(`[DataService] Loaded ${this.bots.size} bots`);
     } catch (error) {
       console.error('[DataService] Error during data ingestion:', error);
       throw error;
@@ -142,6 +147,22 @@ export class DataService {
   }
 
   /**
+   * Load bots from bots.json
+   */
+  private async loadBots(): Promise<void> {
+    const botsPath = join(this.dataPath, 'bots.json');
+    try {
+      const content = readFileSync(botsPath, 'utf-8');
+      const botsArray: Bot[] = JSON.parse(content);
+      for (const bot of botsArray) {
+        this.bots.set(bot.id, bot);
+      }
+    } catch (err) {
+      console.error('[DataService] Failed to load bots:', err);
+    }
+  }
+
+  /**
    * Build enriched items with all relationships
    */
   private buildEnrichedItems(): void {
@@ -153,6 +174,7 @@ export class DataService {
         trades: this.findTrades(id),
         hideoutUses: this.findHideoutUses(id),
         obtainedFrom: this.findObtainedFrom(id),
+        droppedBy: this.findDroppedBy(id),
       };
       this.enrichedItems.set(id, enriched);
     }
@@ -305,6 +327,26 @@ export class DataService {
   }
 
   /**
+   * Find all bots that drop this item
+   */
+  private findDroppedBy(itemId: string): DroppedBy[] {
+    const droppedBy: DroppedBy[] = [];
+
+    for (const [, bot] of this.bots) {
+      if (bot.drops && bot.drops.includes(itemId)) {
+        droppedBy.push({
+          botId: bot.id,
+          botName: bot.name,
+          botImage: bot.image,
+          threat: bot.threat,
+        });
+      }
+    }
+
+    return droppedBy;
+  }
+
+  /**
    * Get an enriched item by ID
    */
   getItem(itemId: string): EnrichedItem | undefined {
@@ -356,6 +398,20 @@ export class DataService {
   }
 
   /**
+   * Get a bot by ID
+   */
+  getBot(botId: string): Bot | undefined {
+    return this.bots.get(botId);
+  }
+
+  /**
+   * Get all bots
+   */
+  getAllBots(): Bot[] {
+    return Array.from(this.bots.values());
+  }
+
+  /**
    * Get statistics
    */
   getStats(): {
@@ -363,12 +419,14 @@ export class DataService {
     quests: number;
     trades: number;
     hideoutStations: number;
+    bots: number;
   } {
     return {
       items: this.items.size,
       quests: this.quests.size,
       trades: this.trades.length,
       hideoutStations: this.hideoutStations.size,
+      bots: this.bots.size,
     };
   }
 }

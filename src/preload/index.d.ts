@@ -1,6 +1,7 @@
 import { ElectronAPI } from '@electron-toolkit/preload';
 import type {
   AppSettings,
+  Bot,
   CalibrationSettings,
   CalibrationState,
   EnrichedItem,
@@ -30,8 +31,11 @@ interface RaiderScannerAPI {
     quests: number;
     trades: number;
     hideoutStations: number;
+    bots: number;
   }>;
   getItem(itemId: string): Promise<EnrichedItem | undefined>;
+  getBot(botId: string): Promise<Bot | undefined>;
+  getAllBots(): Promise<Bot[]>;
 
   // Calibration
   getCalibration(): Promise<CalibrationSettings>;
