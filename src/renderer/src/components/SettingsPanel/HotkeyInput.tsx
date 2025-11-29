@@ -31,6 +31,20 @@ const KEY_MAP: Record<string, string> = {
 // Keys that are not allowed in hotkeys
 const BLOCKED_KEYS = ['Tab', 'CapsLock', 'NumLock', 'ScrollLock', 'Pause', 'Insert', 'PrintScreen'];
 
+// Keys that can be used as standalone hotkeys (without modifiers)
+const STANDALONE_KEYS = [
+  // Function keys
+  /^F\d+$/,
+  // Media keys
+  /^Media/,
+  // Audio keys
+  /^Audio/,
+  // Launch keys
+  /^Launch/,
+  // Browser keys
+  /^Browser/,
+];
+
 export function HotkeyInput({ value, onChange, defaultValue, disabled }: HotkeyInputProps): React.JSX.Element {
   const { t } = useTranslation();
   const [isRecording, setIsRecording] = useState(false);
@@ -117,10 +131,11 @@ export function HotkeyInput({ value, onChange, defaultValue, disabled }: HotkeyI
     const hasModifier = Array.from(keys).some(k => k === 'Control' || k === 'Meta' || k === 'Shift' || k === 'Alt');
     const hasMainKey = Array.from(keys).some(k => !MODIFIER_KEYS.includes(k));
 
-    // Valid hotkey needs either a modifier+key combo or a function key
-    const isFunctionKey = Array.from(keys).some(k => /^F\d+$/.test(k));
+    // Check if any key is a valid standalone key (function keys, media keys, etc.)
+    const isStandaloneKey = Array.from(keys).some(k => STANDALONE_KEYS.some(pattern => pattern.test(k)));
 
-    if ((hasModifier && hasMainKey) || isFunctionKey) {
+    // Valid hotkey needs either a modifier+key combo or a standalone key
+    if ((hasModifier && hasMainKey) || isStandaloneKey) {
       const accelerator = keysToAccelerator(keys);
       if (accelerator) {
         onChange(accelerator);
