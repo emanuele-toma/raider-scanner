@@ -2,7 +2,7 @@
  * Settings Panel Component
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { AppSettings } from '../../../../shared/types';
 import { changeLanguage, GAME_LANGUAGES, SUPPORTED_LANGUAGES } from '../../i18n';
@@ -33,9 +33,14 @@ export default function SettingsPanel({ settings, onSettingsChange }: SettingsPa
   const { t } = useTranslation();
   const [localSettings, setLocalSettings] = useState<AppSettings>(settings);
   const [isSaving, setIsSaving] = useState(false);
+  const isSavingRef = useRef(false);
 
   useEffect(() => {
-    setLocalSettings(settings);
+    // Only sync from parent if we're not in the middle of saving
+    // This prevents the race condition where the old settings overwrite the new ones
+    if (!isSavingRef.current) {
+      setLocalSettings(settings);
+    }
   }, [settings]);
 
   // Auto-save settings immediately when changed
@@ -44,9 +49,11 @@ export default function SettingsPanel({ settings, onSettingsChange }: SettingsPa
       const newSettings = { ...localSettings, [key]: value };
       setLocalSettings(newSettings);
       setIsSaving(true);
+      isSavingRef.current = true;
 
       try {
         const updated = await window.api.updateSettings(newSettings);
+        setLocalSettings(updated);
         onSettingsChange(updated);
 
         // Update i18next language if app language changed
@@ -59,6 +66,7 @@ export default function SettingsPanel({ settings, onSettingsChange }: SettingsPa
         setLocalSettings(settings);
       } finally {
         setIsSaving(false);
+        isSavingRef.current = false;
       }
     },
     [localSettings, onSettingsChange, settings],
