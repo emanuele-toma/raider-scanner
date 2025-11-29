@@ -174,10 +174,7 @@ export function UpdateNotification(): React.JSX.Element | null {
       {updateState.info?.releaseNotes && updateState.status !== 'downloading' && (
         <div className="update-release-notes">
           <p className="release-notes-label">{t('update.whatsNew')}</p>
-          <div className="release-notes-content">
-            {updateState.info.releaseNotes.slice(0, 200)}
-            {updateState.info.releaseNotes.length > 200 && '...'}
-          </div>
+          <div className="release-notes-content" dangerouslySetInnerHTML={{ __html: updateState.info.releaseNotes }} />
         </div>
       )}
 
