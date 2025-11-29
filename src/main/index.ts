@@ -284,6 +284,9 @@ function showOverlay(result: ScanResult): void {
 
   overlayWindow?.showInactive(); // Don't steal focus from game
 
+  // Register overlay-specific hotkeys when overlay is shown
+  registerOverlayHotkeys();
+
   // Auto-hide after delay
   autoHideTimer = setTimeout(() => {
     hideOverlay();
@@ -299,6 +302,9 @@ function hideOverlay(): void {
     autoHideTimer = null;
   }
   overlayWindow?.hide();
+
+  // Unregister overlay-specific hotkeys when overlay is hidden
+  unregisterOverlayHotkeys();
 }
 
 /**
@@ -385,13 +391,13 @@ async function performScan(): Promise<void> {
 }
 
 /**
- * Register global hotkeys
+ * Register global hotkeys (scan hotkey only - always active)
  */
 function registerHotkeys(): void {
   // Unregister existing hotkeys
   globalShortcut.unregisterAll();
 
-  // Register scan hotkey
+  // Register scan hotkey (always active)
   const scanSuccess = globalShortcut.register(settings.hotkey, () => {
     console.log(`[Main] Scan hotkey pressed: ${settings.hotkey}`);
     performScan();
@@ -402,30 +408,48 @@ function registerHotkeys(): void {
   } else {
     console.error(`[Main] Failed to register scan hotkey: ${settings.hotkey}`);
   }
+}
 
+/**
+ * Register overlay-specific hotkeys (only when overlay is visible)
+ */
+function registerOverlayHotkeys(): void {
   // Register close overlay hotkey
-  const closeSuccess = globalShortcut.register(settings.closeOverlayHotkey, () => {
-    console.log(`[Main] Close overlay hotkey pressed: ${settings.closeOverlayHotkey}`);
-    hideOverlay();
-  });
+  if (!globalShortcut.isRegistered(settings.closeOverlayHotkey)) {
+    const closeSuccess = globalShortcut.register(settings.closeOverlayHotkey, () => {
+      console.log(`[Main] Close overlay hotkey pressed: ${settings.closeOverlayHotkey}`);
+      hideOverlay();
+    });
 
-  if (closeSuccess) {
-    console.log(`[Main] Close overlay hotkey registered: ${settings.closeOverlayHotkey}`);
-  } else {
-    console.error(`[Main] Failed to register close overlay hotkey: ${settings.closeOverlayHotkey}`);
+    if (closeSuccess) {
+      console.log(`[Main] Close overlay hotkey registered: ${settings.closeOverlayHotkey}`);
+    } else {
+      console.error(`[Main] Failed to register close overlay hotkey: ${settings.closeOverlayHotkey}`);
+    }
   }
 
   // Register pause/resume timer hotkey
-  const pauseSuccess = globalShortcut.register(settings.pauseTimerHotkey, () => {
-    console.log(`[Main] Toggle timer hotkey pressed: ${settings.pauseTimerHotkey}`);
-    toggleOverlayTimer();
-  });
+  if (!globalShortcut.isRegistered(settings.pauseTimerHotkey)) {
+    const pauseSuccess = globalShortcut.register(settings.pauseTimerHotkey, () => {
+      console.log(`[Main] Toggle timer hotkey pressed: ${settings.pauseTimerHotkey}`);
+      toggleOverlayTimer();
+    });
 
-  if (pauseSuccess) {
-    console.log(`[Main] Pause timer hotkey registered: ${settings.pauseTimerHotkey}`);
-  } else {
-    console.error(`[Main] Failed to register pause timer hotkey: ${settings.pauseTimerHotkey}`);
+    if (pauseSuccess) {
+      console.log(`[Main] Pause timer hotkey registered: ${settings.pauseTimerHotkey}`);
+    } else {
+      console.error(`[Main] Failed to register pause timer hotkey: ${settings.pauseTimerHotkey}`);
+    }
   }
+}
+
+/**
+ * Unregister overlay-specific hotkeys
+ */
+function unregisterOverlayHotkeys(): void {
+  globalShortcut.unregister(settings.closeOverlayHotkey);
+  globalShortcut.unregister(settings.pauseTimerHotkey);
+  console.log('[Main] Overlay hotkeys unregistered');
 }
 
 /**
