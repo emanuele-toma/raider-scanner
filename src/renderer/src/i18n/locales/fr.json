@@ -61,6 +61,7 @@
     "trades": "Échanges",
     "hideoutUpgrades": "Améliorations Planque",
     "breakdown": "Décomposition",
+    "obtainedFrom": "Obtenu De",
     "recycle": "Recycler",
     "salvage": "Récupérer",
     "foundIn": "Trouvé dans",
@@ -69,6 +70,7 @@
     "for": "pour",
     "level": "Niv",
     "more": "+{{count}} de plus",
+    "showLess": "Afficher moins",
     "perDay": "/jour"
   },
   "overlay": {

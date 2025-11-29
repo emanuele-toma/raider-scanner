@@ -208,6 +208,14 @@
   color: var(--speranza-purple);
   font-style: italic;
   font-size: 0.75rem;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  user-select: none;
+}
+
+.section-list-more:hover {
+  color: var(--speranza-cyan);
+  text-decoration: underline;
 }
 
 /* Breakdown Grid */

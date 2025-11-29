@@ -11,6 +11,7 @@ import type {
   HideoutStation,
   HideoutUse,
   Item,
+  ObtainedFrom,
   Quest,
   QuestRelation,
   Trade,
@@ -151,6 +152,7 @@ export class DataService {
         questRelations: this.findQuestRelations(id),
         trades: this.findTrades(id),
         hideoutUses: this.findHideoutUses(id),
+        obtainedFrom: this.findObtainedFrom(id),
       };
       this.enrichedItems.set(id, enriched);
     }
@@ -268,6 +270,38 @@ export class DataService {
     }
 
     return uses;
+  }
+
+  /**
+   * Find all items that produce this item when recycled or salvaged
+   * This is the reverse of recyclesInto/salvagesInto
+   */
+  private findObtainedFrom(itemId: string): ObtainedFrom[] {
+    const sources: ObtainedFrom[] = [];
+
+    for (const [, item] of this.items) {
+      // Check if recycling this item produces the target item
+      if (item.recyclesInto && item.recyclesInto[itemId]) {
+        sources.push({
+          itemId: item.id,
+          itemName: item.name,
+          quantity: item.recyclesInto[itemId],
+          method: 'recycle',
+        });
+      }
+
+      // Check if salvaging this item produces the target item
+      if (item.salvagesInto && item.salvagesInto[itemId]) {
+        sources.push({
+          itemId: item.id,
+          itemName: item.name,
+          quantity: item.salvagesInto[itemId],
+          method: 'salvage',
+        });
+      }
+    }
+
+    return sources;
   }
 
   /**

@@ -65,6 +65,7 @@
     "trades": "Scambi",
     "hideoutUpgrades": "Potenziamenti Rifugio",
     "breakdown": "Scomposizione",
+    "obtainedFrom": "Ottenuto Da",
     "recycle": "Ricicla",
     "salvage": "Recupera",
     "foundIn": "Trovato in",
@@ -73,6 +74,7 @@
     "for": "per",
     "level": "Liv",
     "more": "+{{count}} altri",
+    "showLess": "Mostra meno",
     "perDay": "/giorno"
   },
   "overlay": {

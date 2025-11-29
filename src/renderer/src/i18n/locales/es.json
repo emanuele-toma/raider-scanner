@@ -61,6 +61,7 @@
     "trades": "Intercambios",
     "hideoutUpgrades": "Mejoras del Refugio",
     "breakdown": "Desglose",
+    "obtainedFrom": "Obtenido De",
     "recycle": "Reciclar",
     "salvage": "Recuperar",
     "foundIn": "Encontrado en",
@@ -69,6 +70,7 @@
     "for": "por",
     "level": "Niv",
     "more": "+{{count}} más",
+    "showLess": "Mostrar menos",
     "perDay": "/día"
   },
   "overlay": {

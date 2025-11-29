@@ -17,6 +17,17 @@ interface ItemCardProps {
   appLanguage?: string;
 }
 
+// Track which sections are expanded
+interface ExpandedSections {
+  crafting: boolean;
+  quests: boolean;
+  trades: boolean;
+  hideout: boolean;
+  obtainedFrom: boolean;
+}
+
+const DEFAULT_VISIBLE_ITEMS = 5;
+
 function getRarityClass(rarity?: string): string {
   if (!rarity) return 'rarity-common';
   const lower = rarity.toLowerCase();
@@ -54,6 +65,18 @@ export default function ItemCard({
   const { t } = useTranslation();
   const rarityClass = getRarityClass(item.rarity);
   const [breakdownNames, setBreakdownNames] = useState<Record<string, LocalizedString>>({});
+  const [expanded, setExpanded] = useState<ExpandedSections>({
+    crafting: false,
+    quests: false,
+    trades: false,
+    hideout: false,
+    obtainedFrom: false,
+  });
+
+  // Toggle section expansion
+  const toggleSection = (section: keyof ExpandedSections): void => {
+    setExpanded(prev => ({ ...prev, [section]: !prev[section] }));
+  };
 
   // Get localized strings for item data
   const itemName = getLocalizedString(item.name, appLanguage);
@@ -186,14 +209,20 @@ export default function ItemCard({
             {t('itemCard.usedInCrafting')}
           </h3>
           <ul className="section-list">
-            {item.usedInCrafting.slice(0, 5).map((use, i) => (
-              <li key={i} className="section-list-item">
-                <span className="list-item-name">{getLocalizedString(use.itemName, appLanguage)}</span>
-                <span className="list-item-detail">x{use.quantityNeeded}</span>
+            {(expanded.crafting ? item.usedInCrafting : item.usedInCrafting.slice(0, DEFAULT_VISIBLE_ITEMS)).map(
+              (use, i) => (
+                <li key={i} className="section-list-item">
+                  <span className="list-item-name">{getLocalizedString(use.itemName, appLanguage)}</span>
+                  <span className="list-item-detail">x{use.quantityNeeded}</span>
+                </li>
+              ),
+            )}
+            {item.usedInCrafting.length > DEFAULT_VISIBLE_ITEMS && (
+              <li className="section-list-more" onClick={() => toggleSection('crafting')}>
+                {expanded.crafting
+                  ? t('itemCard.showLess')
+                  : t('itemCard.more', { count: item.usedInCrafting.length - DEFAULT_VISIBLE_ITEMS })}
               </li>
-            ))}
-            {item.usedInCrafting.length > 5 && (
-              <li className="section-list-more">{t('itemCard.more', { count: item.usedInCrafting.length - 5 })}</li>
             )}
           </ul>
         </div>
@@ -207,17 +236,23 @@ export default function ItemCard({
             {t('itemCard.questRequirements')}
           </h3>
           <ul className="section-list">
-            {item.questRelations.slice(0, 5).map((quest, i) => (
-              <li key={i} className="section-list-item">
-                <span className="list-item-name">{getLocalizedString(quest.questName, appLanguage)}</span>
-                <span className="list-item-detail">
-                  {quest.trader} • {quest.type}
-                  {quest.quantity && ` x${quest.quantity}`}
-                </span>
+            {(expanded.quests ? item.questRelations : item.questRelations.slice(0, DEFAULT_VISIBLE_ITEMS)).map(
+              (quest, i) => (
+                <li key={i} className="section-list-item">
+                  <span className="list-item-name">{getLocalizedString(quest.questName, appLanguage)}</span>
+                  <span className="list-item-detail">
+                    {quest.trader} • {quest.type}
+                    {quest.quantity && ` x${quest.quantity}`}
+                  </span>
+                </li>
+              ),
+            )}
+            {item.questRelations.length > DEFAULT_VISIBLE_ITEMS && (
+              <li className="section-list-more" onClick={() => toggleSection('quests')}>
+                {expanded.quests
+                  ? t('itemCard.showLess')
+                  : t('itemCard.more', { count: item.questRelations.length - DEFAULT_VISIBLE_ITEMS })}
               </li>
-            ))}
-            {item.questRelations.length > 5 && (
-              <li className="section-list-more">{t('itemCard.more', { count: item.questRelations.length - 5 })}</li>
             )}
           </ul>
         </div>
@@ -231,18 +266,23 @@ export default function ItemCard({
             {t('itemCard.trades')}
           </h3>
           <ul className="section-list">
-            {item.trades.slice(0, 5).map((trade, i) => (
+            {(expanded.trades ? item.trades : item.trades.slice(0, DEFAULT_VISIBLE_ITEMS)).map((trade, i) => (
               <li key={i} className="section-list-item">
                 <span className="list-item-name">{trade.trader}</span>
                 <span className="list-item-detail">
                   {trade.type === 'buy' ? t('itemCard.buy') : t('itemCard.sell')} x{trade.quantity}
-                  {trade.cost && ` ${t('itemCard.for')} ${trade.cost.quantity}x ${getLocalizedString(trade.cost.itemName, appLanguage)}`}
+                  {trade.cost &&
+                    ` ${t('itemCard.for')} ${trade.cost.quantity}x ${getLocalizedString(trade.cost.itemName, appLanguage)}`}
                   {trade.dailyLimit && ` (${trade.dailyLimit}${t('itemCard.perDay')})`}
                 </span>
               </li>
             ))}
-            {item.trades.length > 5 && (
-              <li className="section-list-more">{t('itemCard.more', { count: item.trades.length - 5 })}</li>
+            {item.trades.length > DEFAULT_VISIBLE_ITEMS && (
+              <li className="section-list-more" onClick={() => toggleSection('trades')}>
+                {expanded.trades
+                  ? t('itemCard.showLess')
+                  : t('itemCard.more', { count: item.trades.length - DEFAULT_VISIBLE_ITEMS })}
+              </li>
             )}
           </ul>
         </div>
@@ -256,7 +296,7 @@ export default function ItemCard({
             {t('itemCard.hideoutUpgrades')}
           </h3>
           <ul className="section-list">
-            {item.hideoutUses.slice(0, 5).map((use, i) => (
+            {(expanded.hideout ? item.hideoutUses : item.hideoutUses.slice(0, DEFAULT_VISIBLE_ITEMS)).map((use, i) => (
               <li key={i} className="section-list-item">
                 <span className="list-item-name">{getLocalizedString(use.stationName, appLanguage)}</span>
                 <span className="list-item-detail">
@@ -264,8 +304,12 @@ export default function ItemCard({
                 </span>
               </li>
             ))}
-            {item.hideoutUses.length > 5 && (
-              <li className="section-list-more">{t('itemCard.more', { count: item.hideoutUses.length - 5 })}</li>
+            {item.hideoutUses.length > DEFAULT_VISIBLE_ITEMS && (
+              <li className="section-list-more" onClick={() => toggleSection('hideout')}>
+                {expanded.hideout
+                  ? t('itemCard.showLess')
+                  : t('itemCard.more', { count: item.hideoutUses.length - DEFAULT_VISIBLE_ITEMS })}
+              </li>
             )}
           </ul>
         </div>
@@ -300,6 +344,35 @@ export default function ItemCard({
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Obtained From (reverse breakdown) */}
+      {item.obtainedFrom && item.obtainedFrom.length > 0 && (
+        <div className="item-card-section">
+          <h3 className="section-title">
+            <span className="section-icon">📦</span>
+            {t('itemCard.obtainedFrom')}
+          </h3>
+          <ul className="section-list">
+            {(expanded.obtainedFrom ? item.obtainedFrom : item.obtainedFrom.slice(0, DEFAULT_VISIBLE_ITEMS)).map(
+              (source, i) => (
+                <li key={i} className="section-list-item">
+                  <span className="list-item-name">{getLocalizedString(source.itemName, appLanguage)}</span>
+                  <span className="list-item-detail">
+                    {source.method === 'recycle' ? t('itemCard.recycle') : t('itemCard.salvage')} • x{source.quantity}
+                  </span>
+                </li>
+              ),
+            )}
+            {item.obtainedFrom.length > DEFAULT_VISIBLE_ITEMS && (
+              <li className="section-list-more" onClick={() => toggleSection('obtainedFrom')}>
+                {expanded.obtainedFrom
+                  ? t('itemCard.showLess')
+                  : t('itemCard.more', { count: item.obtainedFrom.length - DEFAULT_VISIBLE_ITEMS })}
+              </li>
+            )}
+          </ul>
         </div>
       )}
 

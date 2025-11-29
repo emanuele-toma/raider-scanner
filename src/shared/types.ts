@@ -107,6 +107,8 @@ export interface EnrichedItem extends Item {
   trades: TradeInfo[];
   // Hideout upgrades requiring this item
   hideoutUses: HideoutUse[];
+  // Items that produce this item when recycled/salvaged
+  obtainedFrom: ObtainedFrom[];
 }
 
 export interface CraftingUse {
@@ -141,6 +143,14 @@ export interface HideoutUse {
   stationName: LocalizedString;
   level: number;
   quantityNeeded: number;
+}
+
+// Items that produce this item when recycled/salvaged
+export interface ObtainedFrom {
+  itemId: string;
+  itemName: LocalizedString;
+  quantity: number;
+  method: 'recycle' | 'salvage';
 }
 
 // OCR Result
