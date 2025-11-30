@@ -91,7 +91,12 @@
     "level": "Lvl",
     "more": "+{{count}} more",
     "showLess": "Show less",
-    "perDay": "/day"
+    "perDay": "/day",
+    "recommendRecycle": "Better to Recycle",
+    "recommendSell": "Better to Sell",
+    "profitAmount": "+{{amount}} ₵ profit",
+    "recycleWorth": "Recycle worth {{amount}} ₵",
+    "sellWorth": "Sell value {{amount}} ₵"
   },
   "overlay": {
     "noMatchFound": "No Match Found",

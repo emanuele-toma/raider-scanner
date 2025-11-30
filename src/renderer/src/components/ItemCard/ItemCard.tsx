@@ -57,6 +57,17 @@ function formatNumber(num: number): string {
 // Cache for item names to avoid repeated lookups
 const itemNameCache = new Map<string, LocalizedString>();
 
+// Cache for item values (for recycle value calculation)
+const itemValueCache = new Map<string, number>();
+
+// Sell recommendation result
+interface SellRecommendation {
+  action: 'sell' | 'recycle' | 'none';
+  sellValue: number;
+  recycleValue: number;
+  profit: number;
+}
+
 export default function ItemCard({
   item,
   confidence,
@@ -76,6 +87,7 @@ export default function ItemCard({
     obtainedFrom: false,
     droppedBy: false,
   });
+  const [sellRecommendation, setSellRecommendation] = useState<SellRecommendation | null>(null);
 
   // Toggle section expansion
   const toggleSection = (section: keyof ExpandedSections): void => {
@@ -128,6 +140,50 @@ export default function ItemCard({
 
     loadNames();
   }, [item.recyclesInto, item.salvagesInto]);
+
+  // Calculate sell vs recycle recommendation
+  useEffect(() => {
+    // Only calculate if item has a value and recycles into something
+    if (item.value === undefined || !item.recyclesInto || Object.keys(item.recyclesInto).length === 0) {
+      setSellRecommendation(null);
+      return;
+    }
+
+    const calculateRecycleValue = async (): Promise<void> => {
+      let recycleTotal = 0;
+
+      for (const [itemId, quantity] of Object.entries(item.recyclesInto!)) {
+        // Check cache first
+        if (itemValueCache.has(itemId)) {
+          recycleTotal += itemValueCache.get(itemId)! * quantity;
+          continue;
+        }
+
+        try {
+          const fetchedItem = (await window.api.getItem(itemId)) as { value?: number } | null;
+          if (fetchedItem?.value !== undefined) {
+            itemValueCache.set(itemId, fetchedItem.value);
+            recycleTotal += fetchedItem.value * quantity;
+          }
+        } catch {
+          // Item not found or no value, skip
+        }
+      }
+
+      const sellValue = item.value!;
+      const profit = Math.abs(recycleTotal - sellValue);
+
+      if (recycleTotal > sellValue) {
+        setSellRecommendation({ action: 'recycle', sellValue, recycleValue: recycleTotal, profit });
+      } else if (sellValue > recycleTotal) {
+        setSellRecommendation({ action: 'sell', sellValue, recycleValue: recycleTotal, profit });
+      } else {
+        setSellRecommendation({ action: 'none', sellValue, recycleValue: recycleTotal, profit: 0 });
+      }
+    };
+
+    calculateRecycleValue();
+  }, [item.value, item.recyclesInto]);
 
   // Helper to get breakdown item name
   const getBreakdownItemName = (itemId: string): string => {
@@ -197,6 +253,25 @@ export default function ItemCard({
           </div>
         )}
       </div>
+
+      {/* Sell Recommendation */}
+      {sellRecommendation && sellRecommendation.action !== 'none' && sellRecommendation.profit > 0 && (
+        <div className={`sell-recommendation sell-recommendation-${sellRecommendation.action}`}>
+          <span className="sell-recommendation-icon">{sellRecommendation.action === 'recycle' ? '♻️' : '💰'}</span>
+          <div className="sell-recommendation-content">
+            <span className="sell-recommendation-title">
+              {sellRecommendation.action === 'recycle' ? t('itemCard.recommendRecycle') : t('itemCard.recommendSell')}
+            </span>
+            <span className="sell-recommendation-detail">
+              {t('itemCard.profitAmount', { amount: formatNumber(sellRecommendation.profit) })}
+              {' • '}
+              {sellRecommendation.action === 'recycle'
+                ? t('itemCard.recycleWorth', { amount: formatNumber(sellRecommendation.recycleValue) })
+                : t('itemCard.sellWorth', { amount: formatNumber(sellRecommendation.sellValue) })}
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Description */}
       {itemDescription && (
