@@ -16,6 +16,8 @@ function OverlayApp(): React.JSX.Element {
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [countdown, setCountdown] = useState<number>(100);
   const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [completedQuests, setCompletedQuests] = useState<Set<string>>(new Set());
+  const [inProgressQuests, setInProgressQuests] = useState<Set<string>>(new Set());
   const containerRef = useRef<HTMLDivElement>(null);
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -144,14 +146,20 @@ function OverlayApp(): React.JSX.Element {
   useEffect(() => {
     const cleanup = window.api.onScanResult(async (result: ScanResult) => {
       console.log('[Overlay] Received scan result:', result);
-      // Reload settings first, then set result
-      const newSettings = await window.api.getSettings();
+      // Reload settings and quest states, then set result
+      const [newSettings, completed, inProgress] = await Promise.all([
+        window.api.getSettings(),
+        window.api.getCompletedQuests(),
+        window.api.getInProgressQuests(),
+      ]);
       console.log('[Overlay] Loaded settings:', newSettings);
 
       // Update i18next language to match app language
       changeLanguage(newSettings.appLanguage);
 
       setSettings(newSettings);
+      setCompletedQuests(new Set(completed));
+      setInProgressQuests(new Set(inProgress));
       setScanResult(result);
       // Start countdown based on autoHideDelay
       startCountdown(newSettings.autoHideDelay);
@@ -195,6 +203,8 @@ function OverlayApp(): React.JSX.Element {
                 confidence={scanResult.confidence}
                 maxWidth={overlayWidth}
                 appLanguage={appLanguage}
+                completedQuests={completedQuests}
+                inProgressQuests={inProgressQuests}
               />
               {/* CRT Scanline effect - contained within card */}
               {showCrt && <div className="crt-scanlines" />}

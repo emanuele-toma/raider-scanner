@@ -10,6 +10,7 @@ import './App.css';
 import { ARCsPanel } from './components/ARCsPanel/ARCsPanel';
 import { CalibrationPanel } from './components/CalibrationPanel';
 import { ItemCard } from './components/ItemCard';
+import { QuestsPanel } from './components/QuestsPanel/QuestsPanel';
 import { SearchBar } from './components/SearchBar';
 import { SettingsPanel } from './components/SettingsPanel';
 import { UpdateNotification } from './components/UpdateNotification';
@@ -47,17 +48,26 @@ function App(): React.JSX.Element {
   const [dataStats, setDataStats] = useState<DataStats | null>(null);
   const [selectedItem, setSelectedItem] = useState<EnrichedItem | null>(null);
   const [scanHistory, setScanHistory] = useState<ScanHistoryEntry[]>([]);
-  const [activeTab, setActiveTab] = useState<'search' | 'arcs' | 'settings'>('search');
+  const [activeTab, setActiveTab] = useState<'search' | 'quests' | 'arcs' | 'settings'>('search');
   const [selectedBotId, setSelectedBotId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [completedQuests, setCompletedQuests] = useState<Set<string>>(new Set());
+  const [inProgressQuests, setInProgressQuests] = useState<Set<string>>(new Set());
 
   // Load initial data
   useEffect(() => {
     async function loadData(): Promise<void> {
       try {
-        const [loadedSettings, loadedStats] = await Promise.all([window.api.getSettings(), window.api.getDataStats()]);
+        const [loadedSettings, loadedStats, loadedCompletedQuests, loadedInProgressQuests] = await Promise.all([
+          window.api.getSettings(),
+          window.api.getDataStats(),
+          window.api.getCompletedQuests(),
+          window.api.getInProgressQuests(),
+        ]);
         setSettings(loadedSettings);
         setDataStats(loadedStats);
+        setCompletedQuests(new Set(loadedCompletedQuests));
+        setInProgressQuests(new Set(loadedInProgressQuests));
 
         // Initialize i18next with saved app language
         changeLanguage(loadedSettings.appLanguage);
@@ -110,6 +120,58 @@ function App(): React.JSX.Element {
   const handleNavigateToBot = useCallback((botId: string) => {
     setSelectedBotId(botId);
     setActiveTab('arcs');
+  }, []);
+
+  // Handle quest completion toggle
+  const handleQuestToggle = useCallback(async (questId: string, completed: boolean) => {
+    try {
+      await window.api.setQuestCompleted(questId, completed);
+      setCompletedQuests(prev => {
+        const next = new Set(prev);
+        if (completed) {
+          next.add(questId);
+        } else {
+          next.delete(questId);
+        }
+        return next;
+      });
+      // Remove from in-progress when completed
+      if (completed) {
+        setInProgressQuests(prev => {
+          const next = new Set(prev);
+          next.delete(questId);
+          return next;
+        });
+      }
+    } catch (error) {
+      console.error('Failed to toggle quest completion:', error);
+    }
+  }, []);
+
+  // Handle quest in-progress toggle
+  const handleQuestInProgressToggle = useCallback(async (questId: string, inProgress: boolean) => {
+    try {
+      await window.api.setQuestInProgress(questId, inProgress);
+      setInProgressQuests(prev => {
+        const next = new Set(prev);
+        if (inProgress) {
+          next.add(questId);
+        } else {
+          next.delete(questId);
+        }
+        return next;
+      });
+      // Remove from completed when set to in-progress
+      if (inProgress) {
+        setCompletedQuests(prev => {
+          const next = new Set(prev);
+          next.delete(questId);
+          return next;
+        });
+      }
+    } catch (error) {
+      console.error('Failed to toggle quest in-progress:', error);
+    }
   }, []);
 
   // Handle navigating to an item from ARCs panel
@@ -193,6 +255,13 @@ function App(): React.JSX.Element {
               <span className="nav-text">{t('sidebar.search')}</span>
             </button>
             <button
+              className={`nav-btn ${activeTab === 'quests' ? 'active' : ''}`}
+              onClick={() => setActiveTab('quests')}
+            >
+              <span className="nav-icon">📋</span>
+              <span className="nav-text">{t('sidebar.quests')}</span>
+            </button>
+            <button
               className={`nav-btn ${activeTab === 'arcs' ? 'active' : ''}`}
               onClick={() => {
                 setActiveTab('arcs');
@@ -240,6 +309,8 @@ function App(): React.JSX.Element {
                     onClose={() => setSelectedItem(null)}
                     appLanguage={settings?.appLanguage}
                     onNavigateToBot={handleNavigateToBot}
+                    completedQuests={completedQuests}
+                    inProgressQuests={inProgressQuests}
                   />
                 </div>
               )}
@@ -286,6 +357,17 @@ function App(): React.JSX.Element {
             <ARCsPanel
               selectedBotId={selectedBotId}
               onClose={() => setSelectedBotId(null)}
+              onNavigateToItem={handleNavigateToItem}
+            />
+          )}
+
+          {activeTab === 'quests' && (
+            <QuestsPanel
+              appLanguage={settings?.appLanguage}
+              completedQuests={completedQuests}
+              inProgressQuests={inProgressQuests}
+              onToggleQuestComplete={handleQuestToggle}
+              onToggleQuestInProgress={handleQuestInProgressToggle}
               onNavigateToItem={handleNavigateToItem}
             />
           )}

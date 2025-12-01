@@ -46,6 +46,19 @@ const api = {
 
   getAllBots: (): Promise<unknown[]> => ipcRenderer.invoke('get-all-bots'),
 
+  // Quests
+  getAllQuests: (): Promise<unknown[]> => ipcRenderer.invoke('get-all-quests'),
+
+  getCompletedQuests: (): Promise<string[]> => ipcRenderer.invoke('get-completed-quests'),
+
+  setQuestCompleted: (questId: string, completed: boolean): Promise<string[]> =>
+    ipcRenderer.invoke('set-quest-completed', questId, completed),
+
+  getInProgressQuests: (): Promise<string[]> => ipcRenderer.invoke('get-in-progress-quests'),
+
+  setQuestInProgress: (questId: string, inProgress: boolean): Promise<string[]> =>
+    ipcRenderer.invoke('set-quest-in-progress', questId, inProgress),
+
   // Calibration
   getCalibration: (): Promise<CalibrationSettings> => ipcRenderer.invoke(IPC_CHANNELS.GET_CALIBRATION),
 

@@ -5,6 +5,7 @@ import type {
   CalibrationSettings,
   CalibrationState,
   EnrichedItem,
+  Quest,
   ScanResult,
   UpdateState,
 } from '../shared/types';
@@ -36,6 +37,14 @@ interface RaiderScannerAPI {
   getItem(itemId: string): Promise<EnrichedItem | undefined>;
   getBot(botId: string): Promise<Bot | undefined>;
   getAllBots(): Promise<Bot[]>;
+
+  // Quests
+  getAllQuests(): Promise<Quest[]>;
+  getQuest(questId: string): Promise<Quest | undefined>;
+  getCompletedQuests(): Promise<string[]>;
+  setQuestCompleted(questId: string, completed: boolean): Promise<void>;
+  getInProgressQuests(): Promise<string[]>;
+  setQuestInProgress(questId: string, inProgress: boolean): Promise<void>;
 
   // Calibration
   getCalibration(): Promise<CalibrationSettings>;

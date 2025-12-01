@@ -250,6 +250,39 @@
   color: #a855f7;
 }
 
+/* Completed quest styling */
+.section-list-item.quest-completed {
+  opacity: 0.6;
+}
+
+.section-list-item.quest-completed .list-item-name {
+  text-decoration: line-through;
+}
+
+.quest-check {
+  color: #22c55e;
+  margin-right: 6px;
+  font-weight: bold;
+}
+
+/* In-progress quest styling */
+.section-list-item.quest-in-progress {
+  background: rgba(234, 179, 8, 0.1);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  margin: -2px 0;
+}
+
+.section-list-item.quest-in-progress .list-item-name {
+  color: #eab308;
+  font-weight: 600;
+}
+
+.quest-progress-icon {
+  margin-right: 6px;
+}
+
 .section-list-more {
   padding: var(--spacing-xs) 0;
   color: var(--speranza-purple);

@@ -130,11 +130,11 @@ Before scanning works, you need to **calibrate** the app to recognize your game'
 
 ### Overlay Controls
 
-| Action                      | Default Hotkey       |
-| --------------------------- | -------------------- |
-| **Scan item**               | `Ctrl + Shift + D`   |
-| **Close overlay**           | `Ctrl + Shift + C`   |
-| **Pause/Resume countdown**  | `Ctrl + Shift + P`   |
+| Action                     | Default Hotkey     |
+| -------------------------- | ------------------ |
+| **Scan item**              | `Ctrl + Shift + D` |
+| **Close overlay**          | `Ctrl + Shift + C` |
+| **Pause/Resume countdown** | `Ctrl + Shift + P` |
 
 > **💡 Tip:** When you scan a new item while the overlay is open, it automatically closes and scans the new item.
 
@@ -144,13 +144,13 @@ Before scanning works, you need to **calibrate** the app to recognize your game'
 
 Access settings from the main Raider Scanner window.
 
-| Setting             | Description                     | Default            |
-| ------------------- | ------------------------------- | ------------------ |
-| **Scan Hotkey**     | Key to scan items               | `Ctrl + Shift + D` |
-| **Close Hotkey**    | Key to close overlay            | `Ctrl + Shift + C` |
-| **Pause Hotkey**    | Key to pause/resume countdown   | `Ctrl + Shift + P` |
-| **Auto-hide Delay** | How long overlay stays visible  | 5 seconds          |
-| **Overlay Opacity** | How transparent the overlay is  | 100%               |
+| Setting             | Description                    | Default            |
+| ------------------- | ------------------------------ | ------------------ |
+| **Scan Hotkey**     | Key to scan items              | `Ctrl + Shift + D` |
+| **Close Hotkey**    | Key to close overlay           | `Ctrl + Shift + C` |
+| **Pause Hotkey**    | Key to pause/resume countdown  | `Ctrl + Shift + P` |
+| **Auto-hide Delay** | How long overlay stays visible | 5 seconds          |
+| **Overlay Opacity** | How transparent the overlay is | 100%               |
 
 ---
 

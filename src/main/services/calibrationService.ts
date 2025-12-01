@@ -267,13 +267,13 @@ export class CalibrationService {
     // If we're in pick-color step, go back to start step but keep hotkey registered
     // so user can press Ctrl+P again to retry
     const wasPickingColor = this.state.step === 'pick-color';
-    
+
     this.state = { step: 'start' };
     this.hideScreenshotWindow();
     this.screenshotDataUrl = null;
     this.screenshotBitmap = null;
     this.screenshotSize = null;
-    
+
     if (wasPickingColor) {
       // Keep hotkey registered so user can retry with Ctrl+P
       // Re-register to ensure it's active
@@ -281,7 +281,7 @@ export class CalibrationService {
     } else {
       this.unregisterCaptureHotkey();
     }
-    
+
     this.notifyUpdate();
   }
 

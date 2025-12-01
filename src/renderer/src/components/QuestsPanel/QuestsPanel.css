@@ -1,0 +1,903 @@
+/**
+ * QuestsPanel Styles
+ */
+
+.quests-panel {
+  height: 100%;
+  overflow-y: auto;
+  padding-right: var(--spacing-sm);
+}
+
+.quests-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: var(--spacing-md);
+  color: var(--text-muted);
+}
+
+/* Header */
+.quests-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--speranza-bg-dark, #0a0a12);
+  padding-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.panel-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--speranza-cyan);
+  margin: 0 0 var(--spacing-xs) 0;
+}
+
+.panel-description {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+/* Quest Search */
+.quests-search-container {
+  position: relative;
+  margin-bottom: var(--spacing-md);
+}
+
+.quests-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.quests-search-icon {
+  position: absolute;
+  left: 12px;
+  width: 18px;
+  height: 18px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.quests-search-input {
+  width: 100%;
+  padding: 10px 36px 10px 40px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.quests-search-input:focus {
+  outline: none;
+  border-color: var(--speranza-cyan);
+  box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.1);
+}
+
+.quests-search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.quests-search-clear {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 0.875rem;
+  transition: color 0.2s ease;
+}
+
+.quests-search-clear:hover {
+  color: var(--text-primary);
+}
+
+/* Search Results Dropdown */
+.quests-search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 4px;
+  background: var(--speranza-bg-dark, #0a0a12);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  max-height: 320px;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.quests-search-result {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  text-align: left;
+}
+
+.quests-search-result:last-child {
+  border-bottom: none;
+}
+
+.quests-search-result:hover {
+  background: rgba(0, 255, 255, 0.1);
+}
+
+.quests-search-result.completed {
+  opacity: 0.6;
+}
+
+.search-result-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.search-result-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.search-result-name {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-result-check {
+  color: #22c55e;
+  margin-right: 6px;
+}
+
+.search-result-trader {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Overall Progress */
+.quests-overall-progress {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--border-color);
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xs);
+}
+
+.progress-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.progress-numbers {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--speranza-cyan);
+}
+
+.progress-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--speranza-cyan), var(--speranza-purple));
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Traders Grid */
+.traders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.trader-card {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  text-align: left;
+}
+
+.trader-card:hover {
+  background: rgba(0, 0, 0, 0.5);
+  border-color: var(--speranza-cyan);
+  transform: translateY(-2px);
+}
+
+.trader-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.trader-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-color);
+  transition: border-color 0.2s ease;
+}
+
+.trader-card:hover .trader-avatar {
+  border-color: var(--speranza-cyan);
+}
+
+.trader-avatar-placeholder {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: var(--text-muted);
+}
+
+.trader-name {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.trader-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.trader-progress-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.trader-progress-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.trader-progress-text {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.trader-view-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.75rem;
+  color: var(--speranza-cyan);
+  margin-top: auto;
+}
+
+.trader-view-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.trader-card:hover .trader-view-btn svg {
+  transform: translateX(4px);
+}
+
+/* Back Button */
+.quest-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: var(--spacing-md);
+}
+
+.quest-back-btn:hover {
+  background: rgba(0, 255, 255, 0.1);
+  border-color: var(--speranza-cyan);
+  color: var(--speranza-cyan);
+}
+
+.quest-back-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Trader Header */
+.quests-trader-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.trader-avatar-large {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--border-color);
+}
+
+.trader-avatar-placeholder.large {
+  width: 64px;
+  height: 64px;
+  font-size: 1.75rem;
+}
+
+.trader-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.trader-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.trader-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+/* Show Completed Toggle */
+.show-completed-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  user-select: none;
+}
+
+.show-completed-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--speranza-cyan);
+}
+
+.toggle-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* Quest List */
+.quests-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.quest-card {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.quest-card:hover {
+  border-color: rgba(0, 255, 255, 0.3);
+}
+
+.quest-card.completed {
+  opacity: 0.7;
+}
+
+.quest-card.completed:hover {
+  opacity: 1;
+}
+
+.quest-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+}
+
+/* Quest Number */
+.quest-number {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Quest Checkbox */
+.quest-checkbox {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border-color);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.quest-checkbox:hover {
+  border-color: var(--speranza-cyan);
+  background: rgba(0, 255, 255, 0.1);
+}
+
+.quest-checkbox.checked {
+  background: #22c55e;
+  border-color: #22c55e;
+}
+
+.quest-checkbox svg {
+  width: 14px;
+  height: 14px;
+  color: white;
+}
+
+.quest-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.quest-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  transition: color 0.2s ease;
+}
+
+.quest-name.completed {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.quest-objective-count {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.quest-expand-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.quest-expand-icon.expanded {
+  transform: rotate(180deg);
+}
+
+/* Quest Card Body */
+.quest-card-body {
+  padding: 0 var(--spacing-md) var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+  margin-top: var(--spacing-xs);
+  padding-top: var(--spacing-md);
+}
+
+.quest-description {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 var(--spacing-md) 0;
+  padding: var(--spacing-sm);
+  background: rgba(0, 0, 0, 0.2);
+  border-left: 2px solid var(--speranza-purple);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.quest-section {
+  margin-bottom: var(--spacing-md);
+}
+
+.quest-section:last-child {
+  margin-bottom: 0;
+}
+
+.quest-section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--speranza-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.section-icon {
+  font-size: 0.875rem;
+}
+
+/* Objectives */
+.quest-objectives {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quest-objective {
+  display: flex;
+  gap: var(--spacing-xs);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.objective-bullet {
+  color: var(--speranza-cyan);
+}
+
+/* Quest Items */
+.quest-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.quest-item-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quest-item-btn:hover {
+  background: rgba(0, 255, 255, 0.1);
+  border-color: var(--speranza-cyan);
+  color: var(--speranza-cyan);
+}
+
+.quest-item-btn.reward {
+  border-color: rgba(250, 204, 21, 0.3);
+}
+
+.quest-item-btn.reward:hover {
+  background: rgba(250, 204, 21, 0.1);
+  border-color: #facc15;
+  color: #facc15;
+}
+
+.item-quantity {
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.item-name {
+  text-transform: capitalize;
+}
+
+/* XP */
+.quest-xp {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font-size: 0.75rem;
+}
+
+.xp-icon {
+  font-size: 0.875rem;
+}
+
+.xp-value {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: #a855f7;
+}
+
+/* Quest Chain Links */
+.quest-chain-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.quest-chain-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: rgba(0, 245, 255, 0.05);
+  border: 1px solid rgba(0, 245, 255, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quest-chain-link-btn:hover {
+  background: rgba(0, 245, 255, 0.15);
+  border-color: var(--speranza-cyan);
+  color: var(--speranza-cyan);
+}
+
+.quest-chain-name {
+  font-weight: 500;
+}
+
+.quest-chain-trader {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
+.quest-chain-link-btn:hover .quest-chain-trader {
+  color: rgba(0, 245, 255, 0.7);
+}
+
+/* Empty State */
+.quests-empty {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--text-muted);
+}
+
+/* In Progress State */
+.quest-card.in-progress {
+  border-color: rgba(234, 179, 8, 0.5);
+  background: rgba(234, 179, 8, 0.05);
+}
+
+.quest-card.in-progress:hover {
+  border-color: rgba(234, 179, 8, 0.7);
+}
+
+.quest-name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.quest-in-progress-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #eab308;
+  background: rgba(234, 179, 8, 0.15);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.quest-in-progress-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  padding: 0;
+  margin-right: var(--spacing-xs);
+}
+
+.quest-in-progress-btn:hover {
+  border-color: #eab308;
+  background: rgba(234, 179, 8, 0.1);
+}
+
+.quest-in-progress-btn.active {
+  background: rgba(234, 179, 8, 0.2);
+  border-color: #eab308;
+}
+
+.quest-in-progress-btn svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.quest-in-progress-btn:hover svg,
+.quest-in-progress-btn.active svg {
+  color: #eab308;
+}
+
+/* Cascade Confirmation Modal */
+.cascade-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--spacing-lg);
+}
+
+.cascade-modal {
+  background: var(--speranza-bg-dark, #0a0a12);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.cascade-modal-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--speranza-cyan);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.cascade-modal-message {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0 0 var(--spacing-md) 0;
+  line-height: 1.5;
+}
+
+.cascade-modal-quests {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.cascade-quest-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 4px 0;
+}
+
+.cascade-quest-bullet {
+  color: var(--speranza-cyan);
+}
+
+.cascade-quest-name {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.cascade-quest-trader {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.cascade-quest-more {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-style: italic;
+  padding-top: var(--spacing-xs);
+}
+
+.cascade-quest-more.clickable {
+  cursor: pointer;
+  color: var(--speranza-purple);
+  transition: color 0.2s ease;
+}
+
+.cascade-quest-more.clickable:hover {
+  color: var(--speranza-cyan);
+  text-decoration: underline;
+}
+
+.cascade-modal-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.cascade-btn {
+  flex: 1;
+  min-width: 100px;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cascade-btn-confirm {
+  background: var(--speranza-cyan);
+  border: 1px solid var(--speranza-cyan);
+  color: #000;
+}
+
+.cascade-btn-confirm:hover {
+  background: #00e5e5;
+}
+
+.cascade-btn-skip {
+  background: rgba(234, 179, 8, 0.2);
+  border: 1px solid rgba(234, 179, 8, 0.5);
+  color: #eab308;
+}
+
+.cascade-btn-skip:hover {
+  background: rgba(234, 179, 8, 0.3);
+}
+
+.cascade-btn-cancel {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.cascade-btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--text-muted);
+}

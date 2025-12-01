@@ -16,6 +16,8 @@ interface ItemCardProps {
   maxWidth?: number;
   appLanguage?: string;
   onNavigateToBot?: (botId: string) => void;
+  completedQuests?: Set<string>;
+  inProgressQuests?: Set<string>;
 }
 
 // Track which sections are expanded
@@ -75,6 +77,8 @@ export default function ItemCard({
   maxWidth,
   appLanguage = 'en',
   onNavigateToBot,
+  completedQuests,
+  inProgressQuests,
 }: ItemCardProps): React.JSX.Element {
   const { t } = useTranslation();
   const rarityClass = getRarityClass(item.rarity);
@@ -316,15 +320,26 @@ export default function ItemCard({
           </h3>
           <ul className="section-list">
             {(expanded.quests ? item.questRelations : item.questRelations.slice(0, DEFAULT_VISIBLE_ITEMS)).map(
-              (quest, i) => (
-                <li key={i} className="section-list-item">
-                  <span className="list-item-name">{getLocalizedString(quest.questName, appLanguage)}</span>
-                  <span className="list-item-detail">
-                    {quest.trader} • {quest.type}
-                    {quest.quantity && ` x${quest.quantity}`}
-                  </span>
-                </li>
-              ),
+              (quest, i) => {
+                const isQuestCompleted = completedQuests?.has(quest.questId);
+                const isQuestInProgress = inProgressQuests?.has(quest.questId);
+                return (
+                  <li
+                    key={i}
+                    className={`section-list-item ${isQuestCompleted ? 'quest-completed' : ''} ${isQuestInProgress ? 'quest-in-progress' : ''}`}
+                  >
+                    <span className="list-item-name">
+                      {isQuestCompleted && <span className="quest-check">✓</span>}
+                      {isQuestInProgress && <span className="quest-progress-icon">⏳</span>}
+                      {getLocalizedString(quest.questName, appLanguage)}
+                    </span>
+                    <span className="list-item-detail">
+                      {quest.trader} • {quest.type}
+                      {quest.quantity && ` x${quest.quantity}`}
+                    </span>
+                  </li>
+                );
+              },
             )}
             {item.questRelations.length > DEFAULT_VISIBLE_ITEMS && (
               <li className="section-list-more" onClick={() => toggleSection('quests')}>

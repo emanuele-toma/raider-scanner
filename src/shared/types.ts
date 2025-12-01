@@ -63,7 +63,10 @@ export interface Quest {
   description?: LocalizedString;
   trader: string;
   objectives?: LocalizedString[];
+  requiredItemIds?: QuestReward[];
+  grantedItemIds?: QuestReward[];
   rewardItemIds?: QuestReward[];
+  otherRequirements?: string[];
   xp?: number;
   previousQuestIds?: string[];
   nextQuestIds?: string[];

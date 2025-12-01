@@ -82,12 +82,12 @@ export function changeLanguage(lang: string): void {
  */
 export function getLocalizedString(localized: LocalizedString | string | undefined, lang: string): string {
   if (!localized) return '';
-  
+
   // Handle plain string (backwards compatibility)
   if (typeof localized === 'string') {
     return localized;
   }
-  
+
   // Handle LocalizedString object
   const value = localized[lang as keyof LocalizedString];
   return value || localized.en || '';

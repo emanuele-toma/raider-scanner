@@ -51,7 +51,8 @@
 }
 
 @keyframes recording-pulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
   }
   50% {
@@ -108,7 +109,8 @@
 }
 
 @keyframes recording-dot-pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     opacity: 1;
   }

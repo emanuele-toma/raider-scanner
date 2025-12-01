@@ -1,0 +1,27 @@
+# Check translations and sort them
+echo "🔍 Checking translations..."
+
+# Run the translation checker
+output=$(bun scripts/check-translations.ts 2>&1)
+exit_code=$?
+
+echo "$output"
+
+# If there are missing keys, fail the commit
+if [ $exit_code -ne 0 ]; then
+  echo "❌ Translation check failed. Please fix missing keys before committing."
+  exit 1
+fi
+
+# Extract modified files and add them to staging
+echo "$output" | grep "^MODIFIED_FILE:" | while read -r line; do
+  file="${line#MODIFIED_FILE:}"
+  if [ -n "$file" ]; then
+    echo "📝 Adding sorted file to staging: $file"
+    git add "$file"
+  fi
+done
+
+# Run lint-staged for prettier and eslint
+echo "🔧 Running lint-staged..."
+npx lint-staged

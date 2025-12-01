@@ -153,7 +153,9 @@ export function CalibrationPanel(): React.JSX.Element {
         <div className="calibration-wizard">
           {/* Progress Steps */}
           <div className="wizard-steps">
-            <div className={`wizard-step ${calibrationState.step === 'start' ? 'active' : ''} ${calibrationState.step === 'pick-color' || calibrationState.step === 'complete' ? 'completed' : ''}`}>
+            <div
+              className={`wizard-step ${calibrationState.step === 'start' ? 'active' : ''} ${calibrationState.step === 'pick-color' || calibrationState.step === 'complete' ? 'completed' : ''}`}
+            >
               <div className="step-indicator">
                 <span className="step-number">1</span>
                 <div className="step-pulse" />
@@ -161,7 +163,9 @@ export function CalibrationPanel(): React.JSX.Element {
               <span className="step-label">{t('calibration.stepCapture')}</span>
             </div>
             <div className="step-connector" />
-            <div className={`wizard-step ${calibrationState.step === 'pick-color' ? 'active' : ''} ${calibrationState.step === 'complete' ? 'completed' : ''}`}>
+            <div
+              className={`wizard-step ${calibrationState.step === 'pick-color' ? 'active' : ''} ${calibrationState.step === 'complete' ? 'completed' : ''}`}
+            >
               <div className="step-indicator">
                 <span className="step-number">2</span>
                 <div className="step-pulse" />
@@ -215,7 +219,10 @@ export function CalibrationPanel(): React.JSX.Element {
 
             {calibrationState.tooltipColor && (
               <div className="preview-color">
-                <div className="preview-swatch" style={{ backgroundColor: formatColor(calibrationState.tooltipColor) }} />
+                <div
+                  className="preview-swatch"
+                  style={{ backgroundColor: formatColor(calibrationState.tooltipColor) }}
+                />
                 <span className="preview-label">{t('calibration.selectedColor')}</span>
               </div>
             )}

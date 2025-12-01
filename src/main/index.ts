@@ -103,6 +103,14 @@ const DEFAULT_SETTINGS: AppSettings = {
 let settings: AppSettings = { ...DEFAULT_SETTINGS };
 let settingsPath: string;
 
+// Completed quests storage
+let completedQuests: Set<string> = new Set();
+let completedQuestsPath: string;
+
+// In-progress quests storage
+let inProgressQuests: Set<string> = new Set();
+let inProgressQuestsPath: string;
+
 /**
  * Get settings file path
  */
@@ -139,6 +147,82 @@ function saveSettings(): void {
     console.log('[Settings] Saved settings');
   } catch (error) {
     console.error('[Settings] Failed to save settings:', error);
+  }
+}
+
+/**
+ * Get completed quests file path
+ */
+function getCompletedQuestsPath(): string {
+  return join(app.getPath('userData'), 'completed-quests.json');
+}
+
+/**
+ * Get in-progress quests file path
+ */
+function getInProgressQuestsPath(): string {
+  return join(app.getPath('userData'), 'in-progress-quests.json');
+}
+
+/**
+ * Load completed quests from disk
+ */
+function loadCompletedQuests(): void {
+  try {
+    completedQuestsPath = getCompletedQuestsPath();
+    if (existsSync(completedQuestsPath)) {
+      const data = readFileSync(completedQuestsPath, 'utf-8');
+      const loaded = JSON.parse(data);
+      completedQuests = new Set(loaded);
+      console.log('[Quests] Loaded', completedQuests.size, 'completed quests');
+    } else {
+      console.log('[Quests] No completed quests file found');
+    }
+  } catch (error) {
+    console.error('[Quests] Failed to load completed quests:', error);
+  }
+}
+
+/**
+ * Load in-progress quests from disk
+ */
+function loadInProgressQuests(): void {
+  try {
+    inProgressQuestsPath = getInProgressQuestsPath();
+    if (existsSync(inProgressQuestsPath)) {
+      const data = readFileSync(inProgressQuestsPath, 'utf-8');
+      const loaded = JSON.parse(data);
+      inProgressQuests = new Set(loaded);
+      console.log('[Quests] Loaded', inProgressQuests.size, 'in-progress quests');
+    } else {
+      console.log('[Quests] No in-progress quests file found');
+    }
+  } catch (error) {
+    console.error('[Quests] Failed to load in-progress quests:', error);
+  }
+}
+
+/**
+ * Save completed quests to disk
+ */
+function saveCompletedQuests(): void {
+  try {
+    writeFileSync(completedQuestsPath, JSON.stringify(Array.from(completedQuests)));
+    console.log('[Quests] Saved completed quests');
+  } catch (error) {
+    console.error('[Quests] Failed to save completed quests:', error);
+  }
+}
+
+/**
+ * Save in-progress quests to disk
+ */
+function saveInProgressQuests(): void {
+  try {
+    writeFileSync(inProgressQuestsPath, JSON.stringify(Array.from(inProgressQuests)));
+    console.log('[Quests] Saved in-progress quests');
+  } catch (error) {
+    console.error('[Quests] Failed to save in-progress quests:', error);
   }
 }
 
@@ -554,6 +638,49 @@ function setupIPC(): void {
     return dataService.getAllBots();
   });
 
+  // Get all quests
+  ipcMain.handle('get-all-quests', () => {
+    return dataService.getAllQuests();
+  });
+
+  // Get completed quests
+  ipcMain.handle('get-completed-quests', () => {
+    return Array.from(completedQuests);
+  });
+
+  // Set quest completion status
+  ipcMain.handle('set-quest-completed', (_event, questId: string, completed: boolean) => {
+    if (completed) {
+      completedQuests.add(questId);
+      // Remove from in-progress when completed
+      inProgressQuests.delete(questId);
+      saveInProgressQuests();
+    } else {
+      completedQuests.delete(questId);
+    }
+    saveCompletedQuests();
+    return Array.from(completedQuests);
+  });
+
+  // Get in-progress quests
+  ipcMain.handle('get-in-progress-quests', () => {
+    return Array.from(inProgressQuests);
+  });
+
+  // Set quest in-progress status
+  ipcMain.handle('set-quest-in-progress', (_event, questId: string, inProgress: boolean) => {
+    if (inProgress) {
+      inProgressQuests.add(questId);
+      // Remove from completed when set to in-progress
+      completedQuests.delete(questId);
+      saveCompletedQuests();
+    } else {
+      inProgressQuests.delete(questId);
+    }
+    saveInProgressQuests();
+    return Array.from(inProgressQuests);
+  });
+
   // Calibration handlers
   ipcMain.handle(IPC_CHANNELS.GET_CALIBRATION, () => {
     return calibrationService.getSettings();
@@ -672,6 +799,12 @@ app.whenReady().then(async () => {
 
   // Load saved settings
   loadSettings();
+
+  // Load completed quests
+  loadCompletedQuests();
+
+  // Load in-progress quests
+  loadInProgressQuests();
 
   // Watch for window shortcuts in development
   app.on('browser-window-created', (_, window) => {

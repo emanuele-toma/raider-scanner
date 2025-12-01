@@ -429,4 +429,18 @@ export class DataService {
       bots: this.bots.size,
     };
   }
+
+  /**
+   * Get all quests
+   */
+  getAllQuests(): Quest[] {
+    return Array.from(this.quests.values());
+  }
+
+  /**
+   * Get a quest by ID
+   */
+  getQuest(questId: string): Quest | undefined {
+    return this.quests.get(questId);
+  }
 }
