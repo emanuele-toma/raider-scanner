@@ -141,7 +141,7 @@ export default function ItemCard({
   const translatedRarity = t(`rarity.${getRarityKey(item.rarity)}`);
   const translatedType = item.type ? t(`itemType.${item.type}`, { defaultValue: item.type }) : undefined;
 
-  // Load item names for recycle/salvage breakdown
+  // Load item names for recycle/salvage breakdown and recipe ingredients
   useEffect(() => {
     const itemIds = new Set<string>();
     if (item.recyclesInto) {
@@ -149,6 +149,9 @@ export default function ItemCard({
     }
     if (item.salvagesInto) {
       Object.keys(item.salvagesInto).forEach(id => itemIds.add(id));
+    }
+    if (item.recipe) {
+      Object.keys(item.recipe).forEach(id => itemIds.add(id));
     }
 
     if (itemIds.size === 0) return;
@@ -178,7 +181,7 @@ export default function ItemCard({
     };
 
     loadNames();
-  }, [item.recyclesInto, item.salvagesInto]);
+  }, [item.recyclesInto, item.salvagesInto, item.recipe]);
 
   // Calculate sell vs recycle recommendation
   useEffect(() => {
@@ -456,6 +459,27 @@ export default function ItemCard({
           </ul>
         </div>
       )}
+
+      {/* Refiner Info */}
+      {item.craftBench &&
+        (Array.isArray(item.craftBench) ? item.craftBench.includes('refiner') : item.craftBench === 'refiner') &&
+        item.recipe &&
+        Object.keys(item.recipe).length > 0 && (
+          <div className="item-card-section">
+            <h3 className="section-title">
+              <span className="section-icon">⚗️</span>
+              {t('itemCard.refinerTitle')}
+            </h3>
+            <ul className="section-list">
+              {Object.entries(item.recipe).map(([ingredientId, quantity]) => (
+                <li key={ingredientId} className="section-list-item">
+                  <span className="list-item-name">{getBreakdownItemName(ingredientId)}</span>
+                  <span className="list-item-detail">x{quantity}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
       {/* Recycle/Salvage Info */}
       {(item.recyclesInto || item.salvagesInto) && (
