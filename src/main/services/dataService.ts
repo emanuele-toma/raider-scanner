@@ -202,26 +202,33 @@ export class DataService {
   }
 
   /**
-   * Find all quests related to this item
+   * Find all quests that require this item (objectives only, not rewards)
    */
   private findQuestRelations(itemId: string): QuestRelation[] {
     const relations: QuestRelation[] = [];
 
-    for (const [, quest] of this.quests) {
-      // Check if item is a reward
-      if (quest.rewardItemIds) {
-        for (const reward of quest.rewardItemIds) {
-          if (reward.itemId === itemId) {
+    for (const [questId, quest] of this.quests) {
+      // Check if item is required (objective) - we don't show rewards as they're not useful info
+      if (quest.requiredItemIds && quest.requiredItemIds.length > 0) {
+        for (const required of quest.requiredItemIds) {
+          if (required.itemId === itemId) {
+            console.log(
+              `[DataService] Found quest relation: ${itemId} required for quest ${questId} (${quest.name.en})`,
+            );
             relations.push({
               questId: quest.id,
               questName: quest.name,
               trader: quest.trader,
-              type: 'reward',
-              quantity: reward.quantity,
+              type: 'objective',
+              quantity: required.quantity,
             });
           }
         }
       }
+    }
+
+    if (relations.length === 0) {
+      console.log(`[DataService] No quest relations found for item: ${itemId}`);
     }
 
     return relations;

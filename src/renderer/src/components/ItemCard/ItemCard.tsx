@@ -324,7 +324,8 @@ export default function ItemCard({
             {(expanded.quests ? item.questRelations : item.questRelations.slice(0, DEFAULT_VISIBLE_ITEMS)).map(
               (quest, i) => {
                 const isQuestCompleted = completedQuests?.has(quest.questId);
-                const isQuestInProgress = inProgressQuests?.has(quest.questId);
+                // Only highlight as in-progress if it's an objective (item you need to collect), not a reward
+                const isQuestInProgress = quest.type === 'objective' && inProgressQuests?.has(quest.questId);
                 return (
                   <li
                     key={i}
