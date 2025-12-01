@@ -117,6 +117,7 @@ export interface DetectedRegion {
 
 export interface ScanResultWithRegion {
   text: string;
+  fullText: string; // All OCR text (for reverse search)
   confidence: number;
   detectedRegion: DetectedRegion;
 }
@@ -587,20 +588,55 @@ export class OCRService {
 
   /**
    * Preprocess image for better OCR results
-   * Applies grayscale, contrast enhancement, and thresholding
+   * Keeps only dark pixels (text) and makes everything else white
    */
   async preprocessImage(imageBuffer: Buffer, width: number, height: number): Promise<Buffer> {
     try {
       const sharp = await import('sharp');
 
+      // First, get raw pixel data
+      const { data, info } = await sharp.default(imageBuffer).raw().toBuffer({ resolveWithObject: true });
+
+      // Process pixels: keep only dark pixels, make everything else white
+      // Dark pixels (text) are typically below a certain brightness threshold
+      const darkThreshold = 80; // Pixels darker than this are considered text
+      const processedData = Buffer.alloc(data.length);
+
+      for (let i = 0; i < data.length; i += info.channels) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+
+        // Calculate brightness (simple average)
+        const brightness = (r + g + b) / 3;
+
+        if (brightness < darkThreshold) {
+          // Keep dark pixels as black
+          processedData[i] = 0; // R
+          processedData[i + 1] = 0; // G
+          processedData[i + 2] = 0; // B
+        } else {
+          // Make everything else white
+          processedData[i] = 255; // R
+          processedData[i + 1] = 255; // G
+          processedData[i + 2] = 255; // B
+        }
+
+        // Copy alpha channel if present
+        if (info.channels === 4) {
+          processedData[i + 3] = data[i + 3];
+        }
+      }
+
+      // Create new image from processed data and apply final processing
       const processed = await sharp
-        .default(imageBuffer)
-        // Convert to grayscale
-        .grayscale()
-        // Increase contrast
-        .normalize()
-        // Apply slight sharpening
-        .sharpen()
+        .default(processedData, {
+          raw: {
+            width: info.width,
+            height: info.height,
+            channels: info.channels,
+          },
+        })
         // Resize for better OCR (2x upscale)
         .resize({
           width: width * 2,
@@ -608,8 +644,9 @@ export class OCRService {
           fit: 'fill',
           kernel: 'lanczos3',
         })
-        // Convert to PNG
+        // Convert to PNG with proper DPI for Tesseract (300 DPI is recommended)
         .png()
+        .withMetadata({ density: 300 })
         .toBuffer();
 
       return processed;
@@ -622,7 +659,11 @@ export class OCRService {
   /**
    * Perform OCR on an image buffer and return text with largest font size
    */
-  async recognize(imageBuffer: Buffer, width: number, height: number): Promise<{ text: string; confidence: number }> {
+  async recognize(
+    imageBuffer: Buffer,
+    width: number,
+    height: number,
+  ): Promise<{ text: string; fullText: string; confidence: number }> {
     if (!this.worker || !this.isInitialized) {
       throw new Error('OCR Service not initialized');
     }
@@ -643,6 +684,9 @@ export class OCRService {
       console.log(`[OCRService] Recognition completed in ${Date.now() - startTime}ms`);
       console.log(`[OCRService] Full text: "${result.data.text.trim()}"`);
 
+      // Store full text for reverse search
+      const fullText = result.data.text.trim();
+
       // Navigate the Tesseract structure: blocks -> paragraphs -> lines -> words
       const data = result.data;
       const blocks = data.blocks || [];
@@ -651,7 +695,7 @@ export class OCRService {
 
       if (blocks.length === 0) {
         console.log('[OCRService] No blocks detected, using full text');
-        return { text: result.data.text.trim(), confidence: result.data.confidence };
+        return { text: fullText, fullText, confidence: result.data.confidence };
       }
 
       // Collect all lines with font size calculated from word heights (more accurate than line bbox)
@@ -695,7 +739,7 @@ export class OCRService {
       console.log(`[OCRService] Found ${allLines.length} lines total`);
 
       if (allLines.length === 0) {
-        return { text: result.data.text.trim(), confidence: result.data.confidence };
+        return { text: fullText, fullText, confidence: result.data.confidence };
       }
 
       // Sort all lines by Y position
@@ -741,6 +785,7 @@ export class OCRService {
 
       return {
         text: titleText.trim(),
+        fullText,
         confidence: avgConfidence,
       };
     } catch (error) {

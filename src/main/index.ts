@@ -481,9 +481,10 @@ async function performScan(): Promise<void> {
     }
 
     console.log(`[Main] OCR Result: "${ocrResult.text}" (${ocrResult.confidence}%)`);
+    console.log(`[Main] Full OCR text: "${ocrResult.fullText}"`);
 
-    // Search for matching item
-    const match = searchService.findBestMatch(ocrResult.text, 0.5);
+    // Search for matching item (pass both title text and full text for reverse search)
+    const match = searchService.findBestMatch(ocrResult.text, 0.5, ocrResult.fullText);
 
     if (match) {
       console.log(`[Main] Found match: ${match.item.name.en}`);
