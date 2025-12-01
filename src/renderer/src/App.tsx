@@ -9,6 +9,7 @@ import type { AppSettings, EnrichedItem } from '../../shared/types';
 import './App.css';
 import { ARCsPanel } from './components/ARCsPanel/ARCsPanel';
 import { CalibrationPanel } from './components/CalibrationPanel';
+import { HideoutPanel } from './components/HideoutPanel/HideoutPanel';
 import { ItemCard } from './components/ItemCard';
 import { QuestsPanel } from './components/QuestsPanel/QuestsPanel';
 import { SearchBar } from './components/SearchBar';
@@ -48,26 +49,30 @@ function App(): React.JSX.Element {
   const [dataStats, setDataStats] = useState<DataStats | null>(null);
   const [selectedItem, setSelectedItem] = useState<EnrichedItem | null>(null);
   const [scanHistory, setScanHistory] = useState<ScanHistoryEntry[]>([]);
-  const [activeTab, setActiveTab] = useState<'search' | 'quests' | 'arcs' | 'settings'>('search');
+  const [activeTab, setActiveTab] = useState<'search' | 'quests' | 'hideout' | 'arcs' | 'settings'>('search');
   const [selectedBotId, setSelectedBotId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [completedQuests, setCompletedQuests] = useState<Set<string>>(new Set());
   const [inProgressQuests, setInProgressQuests] = useState<Set<string>>(new Set());
+  const [stationLevels, setStationLevels] = useState<Record<string, number>>({});
 
   // Load initial data
   useEffect(() => {
     async function loadData(): Promise<void> {
       try {
-        const [loadedSettings, loadedStats, loadedCompletedQuests, loadedInProgressQuests] = await Promise.all([
-          window.api.getSettings(),
-          window.api.getDataStats(),
-          window.api.getCompletedQuests(),
-          window.api.getInProgressQuests(),
-        ]);
+        const [loadedSettings, loadedStats, loadedCompletedQuests, loadedInProgressQuests, loadedStationLevels] =
+          await Promise.all([
+            window.api.getSettings(),
+            window.api.getDataStats(),
+            window.api.getCompletedQuests(),
+            window.api.getInProgressQuests(),
+            window.api.getStationLevels(),
+          ]);
         setSettings(loadedSettings);
         setDataStats(loadedStats);
         setCompletedQuests(new Set(loadedCompletedQuests));
         setInProgressQuests(new Set(loadedInProgressQuests));
+        setStationLevels(loadedStationLevels as Record<string, number>);
 
         // Initialize i18next with saved app language
         changeLanguage(loadedSettings.appLanguage);
@@ -195,6 +200,19 @@ function App(): React.JSX.Element {
     setSettings(newSettings);
   }, []);
 
+  // Handle station level change
+  const handleSetStationLevel = useCallback(async (stationId: string, level: number) => {
+    try {
+      await window.api.setStationLevel(stationId, level);
+      setStationLevels(prev => ({
+        ...prev,
+        [stationId]: level,
+      }));
+    } catch (error) {
+      console.error('Failed to set station level:', error);
+    }
+  }, []);
+
   if (isLoading) {
     return (
       <div className="app-loading">
@@ -262,6 +280,13 @@ function App(): React.JSX.Element {
               <span className="nav-text">{t('sidebar.quests')}</span>
             </button>
             <button
+              className={`nav-btn ${activeTab === 'hideout' ? 'active' : ''}`}
+              onClick={() => setActiveTab('hideout')}
+            >
+              <span className="nav-icon">🏠</span>
+              <span className="nav-text">{t('sidebar.hideout')}</span>
+            </button>
+            <button
               className={`nav-btn ${activeTab === 'arcs' ? 'active' : ''}`}
               onClick={() => {
                 setActiveTab('arcs');
@@ -311,6 +336,7 @@ function App(): React.JSX.Element {
                     onNavigateToBot={handleNavigateToBot}
                     completedQuests={completedQuests}
                     inProgressQuests={inProgressQuests}
+                    stationLevels={stationLevels}
                   />
                 </div>
               )}
@@ -368,6 +394,15 @@ function App(): React.JSX.Element {
               inProgressQuests={inProgressQuests}
               onToggleQuestComplete={handleQuestToggle}
               onToggleQuestInProgress={handleQuestInProgressToggle}
+              onNavigateToItem={handleNavigateToItem}
+            />
+          )}
+
+          {activeTab === 'hideout' && (
+            <HideoutPanel
+              appLanguage={settings?.appLanguage}
+              stationLevels={stationLevels}
+              onSetStationLevel={handleSetStationLevel}
               onNavigateToItem={handleNavigateToItem}
             />
           )}

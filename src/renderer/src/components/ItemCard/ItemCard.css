@@ -397,3 +397,36 @@
   color: var(--text-secondary);
   font-family: var(--font-mono);
 }
+
+/* Hideout completion styling */
+.section-list-item.hideout-completed {
+  opacity: 0.6;
+}
+
+.section-list-item.hideout-completed .list-item-name {
+  text-decoration: line-through;
+}
+
+.hideout-check {
+  color: #22c55e;
+  margin-right: 6px;
+  font-weight: bold;
+}
+
+/* Hideout needed item styling (all future upgrades) */
+.section-list-item.hideout-needed {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  border-radius: var(--radius-sm);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  margin: 2px 0;
+}
+
+.section-list-item.hideout-needed .list-item-name {
+  color: #22c55e;
+  font-weight: 600;
+}
+
+.hideout-needed-icon {
+  margin-right: 6px;
+}

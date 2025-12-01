@@ -42,6 +42,16 @@
     "close": "Close",
     "unknown": "Unknown"
   },
+  "hideout": {
+    "description": "Track your hideout station levels and find items needed for upgrades.",
+    "level": "Level",
+    "levelUpgrade": "Level {{level}}",
+    "next": "Next",
+    "noStations": "No hideout stations found.",
+    "noUpgrades": "No upgrades available",
+    "title": "Hideout Tracker",
+    "yourLevel": "Your Level"
+  },
   "itemCard": {
     "breakdown": "Breakdown",
     "buy": "Buy",
@@ -171,6 +181,7 @@
   },
   "sidebar": {
     "arcs": "ARCs",
+    "hideout": "Hideout",
     "howToUse": "How to Use",
     "instruction1": "Hover over an item in ARC Raiders",
     "instruction2": "Press",

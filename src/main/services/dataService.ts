@@ -443,4 +443,18 @@ export class DataService {
   getQuest(questId: string): Quest | undefined {
     return this.quests.get(questId);
   }
+
+  /**
+   * Get all hideout stations
+   */
+  getAllHideoutStations(): HideoutStation[] {
+    return Array.from(this.hideoutStations.values());
+  }
+
+  /**
+   * Get a hideout station by ID
+   */
+  getHideoutStation(stationId: string): HideoutStation | undefined {
+    return this.hideoutStations.get(stationId);
+  }
 }

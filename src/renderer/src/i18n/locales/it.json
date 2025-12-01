@@ -42,6 +42,16 @@
     "close": "Chiudi",
     "unknown": "Sconosciuto"
   },
+  "hideout": {
+    "description": "Tieni traccia dei livelli delle stazioni del rifugio e trova gli oggetti necessari per i potenziamenti.",
+    "level": "Livello",
+    "levelUpgrade": "Livello {{level}}",
+    "next": "Prossimo",
+    "noStations": "Nessuna stazione del rifugio trovata.",
+    "noUpgrades": "Nessun potenziamento disponibile",
+    "title": "Traccia Rifugio",
+    "yourLevel": "Il Tuo Livello"
+  },
   "itemCard": {
     "breakdown": "Scomposizione",
     "buy": "Compra",
@@ -171,6 +181,7 @@
   },
   "sidebar": {
     "arcs": "ARCs",
+    "hideout": "Rifugio",
     "howToUse": "Come Usare",
     "instruction1": "Passa sopra un oggetto in ARC Raiders",
     "instruction2": "Premi",

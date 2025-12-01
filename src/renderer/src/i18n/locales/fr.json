@@ -42,6 +42,16 @@
     "close": "Fermer",
     "unknown": "Inconnu"
   },
+  "hideout": {
+    "description": "Suivez les niveaux de vos stations de planque et trouvez les objets nécessaires pour les améliorations.",
+    "level": "Niveau",
+    "levelUpgrade": "Niveau {{level}}",
+    "next": "Suivant",
+    "noStations": "Aucune station de planque trouvée.",
+    "noUpgrades": "Aucune amélioration disponible",
+    "title": "Suivi de Planque",
+    "yourLevel": "Votre Niveau"
+  },
   "itemCard": {
     "breakdown": "Décomposition",
     "buy": "Acheter",
@@ -171,6 +181,7 @@
   },
   "sidebar": {
     "arcs": "ARCs",
+    "hideout": "Planque",
     "howToUse": "Comment Utiliser",
     "instruction1": "Survolez un objet dans ARC Raiders",
     "instruction2": "Appuyez sur",

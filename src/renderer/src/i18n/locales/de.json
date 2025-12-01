@@ -42,6 +42,16 @@
     "close": "Schließen",
     "unknown": "Unbekannt"
   },
+  "hideout": {
+    "description": "Verfolge deine Versteck-Stationslevel und finde benötigte Gegenstände für Upgrades.",
+    "level": "Stufe",
+    "levelUpgrade": "Stufe {{level}}",
+    "next": "Nächste",
+    "noStations": "Keine Versteck-Stationen gefunden.",
+    "noUpgrades": "Keine Upgrades verfügbar",
+    "title": "Versteck-Tracker",
+    "yourLevel": "Deine Stufe"
+  },
   "itemCard": {
     "breakdown": "Aufschlüsselung",
     "buy": "Kaufen",
@@ -171,6 +181,7 @@
   },
   "sidebar": {
     "arcs": "ARCs",
+    "hideout": "Versteck",
     "howToUse": "Anleitung",
     "instruction1": "Bewege die Maus über einen Gegenstand in ARC Raiders",
     "instruction2": "Drücke",

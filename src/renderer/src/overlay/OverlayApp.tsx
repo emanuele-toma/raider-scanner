@@ -18,6 +18,7 @@ function OverlayApp(): React.JSX.Element {
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [completedQuests, setCompletedQuests] = useState<Set<string>>(new Set());
   const [inProgressQuests, setInProgressQuests] = useState<Set<string>>(new Set());
+  const [stationLevels, setStationLevels] = useState<Record<string, number>>({});
   const containerRef = useRef<HTMLDivElement>(null);
   const countdownRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -147,10 +148,11 @@ function OverlayApp(): React.JSX.Element {
     const cleanup = window.api.onScanResult(async (result: ScanResult) => {
       console.log('[Overlay] Received scan result:', result);
       // Reload settings and quest states, then set result
-      const [newSettings, completed, inProgress] = await Promise.all([
+      const [newSettings, completed, inProgress, levels] = await Promise.all([
         window.api.getSettings(),
         window.api.getCompletedQuests(),
         window.api.getInProgressQuests(),
+        window.api.getStationLevels(),
       ]);
       console.log('[Overlay] Loaded settings:', newSettings);
 
@@ -160,6 +162,7 @@ function OverlayApp(): React.JSX.Element {
       setSettings(newSettings);
       setCompletedQuests(new Set(completed));
       setInProgressQuests(new Set(inProgress));
+      setStationLevels(levels as Record<string, number>);
       setScanResult(result);
       // Start countdown based on autoHideDelay
       startCountdown(newSettings.autoHideDelay);
@@ -205,6 +208,7 @@ function OverlayApp(): React.JSX.Element {
                 appLanguage={appLanguage}
                 completedQuests={completedQuests}
                 inProgressQuests={inProgressQuests}
+                stationLevels={stationLevels}
               />
               {/* CRT Scanline effect - contained within card */}
               {showCrt && <div className="crt-scanlines" />}

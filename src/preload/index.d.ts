@@ -5,6 +5,7 @@ import type {
   CalibrationSettings,
   CalibrationState,
   EnrichedItem,
+  HideoutStation,
   Quest,
   ScanResult,
   UpdateState,
@@ -45,6 +46,11 @@ interface RaiderScannerAPI {
   setQuestCompleted(questId: string, completed: boolean): Promise<void>;
   getInProgressQuests(): Promise<string[]>;
   setQuestInProgress(questId: string, inProgress: boolean): Promise<void>;
+
+  // Hideout
+  getAllHideoutStations(): Promise<HideoutStation[]>;
+  getStationLevels(): Promise<Record<string, number>>;
+  setStationLevel(stationId: string, level: number): Promise<Record<string, number>>;
 
   // Calibration
   getCalibration(): Promise<CalibrationSettings>;

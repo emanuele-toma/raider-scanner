@@ -59,6 +59,14 @@ const api = {
   setQuestInProgress: (questId: string, inProgress: boolean): Promise<string[]> =>
     ipcRenderer.invoke('set-quest-in-progress', questId, inProgress),
 
+  // Hideout
+  getAllHideoutStations: (): Promise<unknown[]> => ipcRenderer.invoke('get-all-hideout-stations'),
+
+  getStationLevels: (): Promise<Record<string, number>> => ipcRenderer.invoke('get-station-levels'),
+
+  setStationLevel: (stationId: string, level: number): Promise<Record<string, number>> =>
+    ipcRenderer.invoke('set-station-level', stationId, level),
+
   // Calibration
   getCalibration: (): Promise<CalibrationSettings> => ipcRenderer.invoke(IPC_CHANNELS.GET_CALIBRATION),
 

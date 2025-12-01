@@ -18,6 +18,7 @@ interface ItemCardProps {
   onNavigateToBot?: (botId: string) => void;
   completedQuests?: Set<string>;
   inProgressQuests?: Set<string>;
+  stationLevels?: Record<string, number>;
 }
 
 // Track which sections are expanded
@@ -79,6 +80,7 @@ export default function ItemCard({
   onNavigateToBot,
   completedQuests,
   inProgressQuests,
+  stationLevels,
 }: ItemCardProps): React.JSX.Element {
   const { t } = useTranslation();
   const rarityClass = getRarityClass(item.rarity);
@@ -390,14 +392,26 @@ export default function ItemCard({
             {t('itemCard.hideoutUpgrades')}
           </h3>
           <ul className="section-list">
-            {(expanded.hideout ? item.hideoutUses : item.hideoutUses.slice(0, DEFAULT_VISIBLE_ITEMS)).map((use, i) => (
-              <li key={i} className="section-list-item">
-                <span className="list-item-name">{getLocalizedString(use.stationName, appLanguage)}</span>
-                <span className="list-item-detail">
-                  {t('itemCard.level')} {use.level} • x{use.quantityNeeded}
-                </span>
-              </li>
-            ))}
+            {(expanded.hideout ? item.hideoutUses : item.hideoutUses.slice(0, DEFAULT_VISIBLE_ITEMS)).map((use, i) => {
+              const currentLevel = stationLevels?.[use.stationId] ?? 0;
+              const isCompleted = currentLevel >= use.level;
+              const isNeeded = !isCompleted; // All future levels are highlighted
+              return (
+                <li
+                  key={i}
+                  className={`section-list-item ${isCompleted ? 'hideout-completed' : ''} ${isNeeded ? 'hideout-needed' : ''}`}
+                >
+                  <span className="list-item-name">
+                    {isCompleted && <span className="hideout-check">✓</span>}
+                    {isNeeded && <span className="hideout-needed-icon">⬆️</span>}
+                    {getLocalizedString(use.stationName, appLanguage)}
+                  </span>
+                  <span className="list-item-detail">
+                    {t('itemCard.level')} {use.level} • x{use.quantityNeeded}
+                  </span>
+                </li>
+              );
+            })}
             {item.hideoutUses.length > DEFAULT_VISIBLE_ITEMS && (
               <li className="section-list-more" onClick={() => toggleSection('hideout')}>
                 {expanded.hideout

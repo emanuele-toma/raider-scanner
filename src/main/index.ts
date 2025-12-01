@@ -111,6 +111,10 @@ let completedQuestsPath: string;
 let inProgressQuests: Set<string> = new Set();
 let inProgressQuestsPath: string;
 
+// Station levels storage (stationId -> current level)
+let stationLevels: Record<string, number> = {};
+let stationLevelsPath: string;
+
 /**
  * Get settings file path
  */
@@ -223,6 +227,43 @@ function saveInProgressQuests(): void {
     console.log('[Quests] Saved in-progress quests');
   } catch (error) {
     console.error('[Quests] Failed to save in-progress quests:', error);
+  }
+}
+
+/**
+ * Get station levels file path
+ */
+function getStationLevelsPath(): string {
+  return join(app.getPath('userData'), 'station-levels.json');
+}
+
+/**
+ * Load station levels from disk
+ */
+function loadStationLevels(): void {
+  try {
+    stationLevelsPath = getStationLevelsPath();
+    if (existsSync(stationLevelsPath)) {
+      const data = readFileSync(stationLevelsPath, 'utf-8');
+      stationLevels = JSON.parse(data);
+      console.log('[Hideout] Loaded station levels:', Object.keys(stationLevels).length, 'stations');
+    } else {
+      console.log('[Hideout] No station levels file found');
+    }
+  } catch (error) {
+    console.error('[Hideout] Failed to load station levels:', error);
+  }
+}
+
+/**
+ * Save station levels to disk
+ */
+function saveStationLevels(): void {
+  try {
+    writeFileSync(stationLevelsPath, JSON.stringify(stationLevels));
+    console.log('[Hideout] Saved station levels');
+  } catch (error) {
+    console.error('[Hideout] Failed to save station levels:', error);
   }
 }
 
@@ -681,6 +722,23 @@ function setupIPC(): void {
     return Array.from(inProgressQuests);
   });
 
+  // Get all hideout stations
+  ipcMain.handle('get-all-hideout-stations', () => {
+    return dataService.getAllHideoutStations();
+  });
+
+  // Get station levels
+  ipcMain.handle('get-station-levels', () => {
+    return stationLevels;
+  });
+
+  // Set station level
+  ipcMain.handle('set-station-level', (_event, stationId: string, level: number) => {
+    stationLevels[stationId] = level;
+    saveStationLevels();
+    return stationLevels;
+  });
+
   // Calibration handlers
   ipcMain.handle(IPC_CHANNELS.GET_CALIBRATION, () => {
     return calibrationService.getSettings();
@@ -823,6 +881,9 @@ if (!gotTheLock) {
 
     // Load in-progress quests
     loadInProgressQuests();
+
+    // Load station levels
+    loadStationLevels();
 
     // Watch for window shortcuts in development
     app.on('browser-window-created', (_, window) => {
