@@ -790,59 +790,78 @@ async function initializeServices(): Promise<void> {
 /**
  * App ready handler
  */
-app.whenReady().then(async () => {
-  // Set app user model id for Windows
-  electronApp.setAppUserModelId('com.raider-scanner');
 
-  // Setup logging first
-  setupLogging();
+// Request single instance lock - prevent multiple instances
+const gotTheLock = app.requestSingleInstanceLock();
 
-  // Load saved settings
-  loadSettings();
-
-  // Load completed quests
-  loadCompletedQuests();
-
-  // Load in-progress quests
-  loadInProgressQuests();
-
-  // Watch for window shortcuts in development
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window);
-  });
-
-  // Setup IPC before creating windows
-  setupIPC();
-
-  // Create main window
-  createMainWindow();
-
-  // Create overlay window
-  createOverlayWindow();
-
-  // Initialize services
-  await initializeServices();
-
-  // Initialize update service (only in production)
-  if (!is.dev) {
-    updateService = new UpdateService();
-    updateService.setMainWindow(mainWindow!);
-    // Check for updates after a short delay
-    setTimeout(() => {
-      updateService.checkForUpdates();
-    }, 5000);
-  }
-
-  // Register hotkeys
-  registerHotkeys();
-
-  // macOS: Re-create window when dock icon is clicked
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createMainWindow();
+if (!gotTheLock) {
+  // Another instance is already running, quit this one
+  app.quit();
+} else {
+  // Handle second instance attempt - focus the existing window
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) {
+        mainWindow.restore();
+      }
+      mainWindow.focus();
     }
   });
-});
+
+  app.whenReady().then(async () => {
+    // Set app user model id for Windows
+    electronApp.setAppUserModelId('com.raider-scanner');
+
+    // Setup logging first
+    setupLogging();
+
+    // Load saved settings
+    loadSettings();
+
+    // Load completed quests
+    loadCompletedQuests();
+
+    // Load in-progress quests
+    loadInProgressQuests();
+
+    // Watch for window shortcuts in development
+    app.on('browser-window-created', (_, window) => {
+      optimizer.watchWindowShortcuts(window);
+    });
+
+    // Setup IPC before creating windows
+    setupIPC();
+
+    // Create main window
+    createMainWindow();
+
+    // Create overlay window
+    createOverlayWindow();
+
+    // Initialize services
+    await initializeServices();
+
+    // Initialize update service (only in production)
+    if (!is.dev) {
+      updateService = new UpdateService();
+      updateService.setMainWindow(mainWindow!);
+      // Check for updates after a short delay
+      setTimeout(() => {
+        updateService.checkForUpdates();
+      }, 5000);
+    }
+
+    // Register hotkeys
+    registerHotkeys();
+
+    // macOS: Re-create window when dock icon is clicked
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) {
+        createMainWindow();
+      }
+    });
+  });
+}
 
 // Cleanup on quit
 app.on('will-quit', () => {
