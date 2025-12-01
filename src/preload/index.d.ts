@@ -22,6 +22,9 @@ interface RaiderScannerAPI {
   // Search
   searchItem(query: string): Promise<Array<{ item: EnrichedItem; score: number }>>;
 
+  // Get all items
+  getAllItems(): Promise<EnrichedItem[]>;
+
   // Overlay control
   setOverlayInteractive(interactive: boolean): void;
   hideOverlay(): void;
@@ -52,6 +55,10 @@ interface RaiderScannerAPI {
   getAllHideoutStations(): Promise<HideoutStation[]>;
   getStationLevels(): Promise<Record<string, number>>;
   setStationLevel(stationId: string, level: number): Promise<Record<string, number>>;
+
+  // Blueprints
+  getUnlockedBlueprints(): Promise<string[]>;
+  setBlueprintUnlocked(blueprintId: string, unlocked: boolean): Promise<string[]>;
 
   // Calibration
   getCalibration(): Promise<CalibrationSettings>;

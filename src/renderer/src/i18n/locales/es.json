@@ -18,6 +18,15 @@
     "weakness": "Debilidad",
     "xp": "Experiencia"
   },
+  "blueprints": {
+    "description": "Rastrea qué planos has desbloqueado.",
+    "markLocked": "Marcar como bloqueado",
+    "markUnlocked": "Marcar como desbloqueado",
+    "noBlueprints": "No se encontraron planos.",
+    "overallProgress": "Progreso General",
+    "searchPlaceholder": "Buscar planos...",
+    "title": "Rastreador de Planos"
+  },
   "calibration": {
     "calibrated": "Calibrado",
     "captureInstruction": "Abre un tooltip en el juego, luego pulsa Ctrl+P para capturar",
@@ -182,6 +191,7 @@
   },
   "sidebar": {
     "arcs": "ARCs",
+    "blueprints": "Planos",
     "hideout": "Refugio",
     "howToUse": "Cómo Usar",
     "instruction1": "Pasa sobre un objeto en ARC Raiders",

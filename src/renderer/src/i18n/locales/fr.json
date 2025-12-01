@@ -18,6 +18,15 @@
     "weakness": "Faiblesse",
     "xp": "Expérience"
   },
+  "blueprints": {
+    "description": "Suivez les schémas que vous avez débloqués.",
+    "markLocked": "Marquer comme verrouillé",
+    "markUnlocked": "Marquer comme débloqué",
+    "noBlueprints": "Aucun schéma trouvé.",
+    "overallProgress": "Progression Générale",
+    "searchPlaceholder": "Rechercher des schémas...",
+    "title": "Suivi des Schémas"
+  },
   "calibration": {
     "calibrated": "Calibré",
     "captureInstruction": "Ouvrez un tooltip en jeu, puis appuyez sur Ctrl+P pour capturer",
@@ -182,6 +191,7 @@
   },
   "sidebar": {
     "arcs": "ARCs",
+    "blueprints": "Schémas",
     "hideout": "Planque",
     "howToUse": "Comment Utiliser",
     "instruction1": "Survolez un objet dans ARC Raiders",

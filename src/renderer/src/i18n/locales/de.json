@@ -18,6 +18,15 @@
     "weakness": "Schwäche",
     "xp": "Erfahrung"
   },
+  "blueprints": {
+    "description": "Verfolge welche Baupläne du freigeschaltet hast.",
+    "markLocked": "Als gesperrt markieren",
+    "markUnlocked": "Als freigeschaltet markieren",
+    "noBlueprints": "Keine Baupläne gefunden.",
+    "overallProgress": "Gesamtfortschritt",
+    "searchPlaceholder": "Baupläne suchen...",
+    "title": "Bauplan-Tracker"
+  },
   "calibration": {
     "calibrated": "Kalibriert",
     "captureInstruction": "Öffne einen Tooltip im Spiel, dann drücke Strg+P zum Aufnehmen",
@@ -182,6 +191,7 @@
   },
   "sidebar": {
     "arcs": "ARCs",
+    "blueprints": "Baupläne",
     "hideout": "Versteck",
     "howToUse": "Anleitung",
     "instruction1": "Bewege die Maus über einen Gegenstand in ARC Raiders",

@@ -18,6 +18,15 @@
     "weakness": "Weakness",
     "xp": "Experience"
   },
+  "blueprints": {
+    "description": "Track which blueprints you have unlocked.",
+    "markLocked": "Mark as locked",
+    "markUnlocked": "Mark as unlocked",
+    "noBlueprints": "No blueprints found.",
+    "overallProgress": "Overall Progress",
+    "searchPlaceholder": "Search blueprints...",
+    "title": "Blueprint Tracker"
+  },
   "calibration": {
     "calibrated": "Calibrated",
     "captureInstruction": "Open a tooltip in-game, then press Ctrl+P to capture",
@@ -182,6 +191,7 @@
   },
   "sidebar": {
     "arcs": "ARCs",
+    "blueprints": "Blueprints",
     "hideout": "Hideout",
     "howToUse": "How to Use",
     "instruction1": "Hover over an item in ARC Raiders",

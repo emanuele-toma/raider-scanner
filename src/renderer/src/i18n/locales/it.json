@@ -18,6 +18,15 @@
     "weakness": "Debolezza",
     "xp": "Esperienza"
   },
+  "blueprints": {
+    "description": "Tieni traccia dei progetti che hai sbloccato.",
+    "markLocked": "Segna come bloccato",
+    "markUnlocked": "Segna come sbloccato",
+    "noBlueprints": "Nessun progetto trovato.",
+    "overallProgress": "Progresso Generale",
+    "searchPlaceholder": "Cerca progetti...",
+    "title": "Tracker Progetti"
+  },
   "calibration": {
     "calibrated": "Calibrato",
     "captureInstruction": "Apri un tooltip nel gioco, poi premi Ctrl+P per catturare",
@@ -182,6 +191,7 @@
   },
   "sidebar": {
     "arcs": "ARCs",
+    "blueprints": "Progetti",
     "hideout": "Rifugio",
     "howToUse": "Come Usare",
     "instruction1": "Passa sopra un oggetto in ARC Raiders",

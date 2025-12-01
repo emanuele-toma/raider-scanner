@@ -269,6 +269,7 @@ export const IPC_CHANNELS = {
   UPDATE_SETTINGS: 'update-settings',
   GET_SETTINGS: 'get-settings',
   SEARCH_ITEM: 'search-item',
+  GET_ALL_ITEMS: 'get-all-items',
   SET_OVERLAY_INTERACTIVE: 'set-overlay-interactive',
   HIDE_OVERLAY: 'hide-overlay',
   OVERLAY_READY: 'overlay-ready',

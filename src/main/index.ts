@@ -115,6 +115,10 @@ let inProgressQuestsPath: string;
 let stationLevels: Record<string, number> = {};
 let stationLevelsPath: string;
 
+// Unlocked blueprints storage
+let unlockedBlueprints: Set<string> = new Set();
+let unlockedBlueprintsPath: string;
+
 /**
  * Get settings file path
  */
@@ -264,6 +268,43 @@ function saveStationLevels(): void {
     console.log('[Hideout] Saved station levels');
   } catch (error) {
     console.error('[Hideout] Failed to save station levels:', error);
+  }
+}
+
+/**
+ * Get unlocked blueprints file path
+ */
+function getUnlockedBlueprintsPath(): string {
+  return join(app.getPath('userData'), 'unlocked-blueprints.json');
+}
+
+/**
+ * Load unlocked blueprints from disk
+ */
+function loadUnlockedBlueprints(): void {
+  try {
+    unlockedBlueprintsPath = getUnlockedBlueprintsPath();
+    if (existsSync(unlockedBlueprintsPath)) {
+      const data = readFileSync(unlockedBlueprintsPath, 'utf-8');
+      unlockedBlueprints = new Set(JSON.parse(data));
+      console.log('[Blueprints] Loaded unlocked blueprints:', unlockedBlueprints.size);
+    } else {
+      console.log('[Blueprints] No unlocked blueprints file found');
+    }
+  } catch (error) {
+    console.error('[Blueprints] Failed to load unlocked blueprints:', error);
+  }
+}
+
+/**
+ * Save unlocked blueprints to disk
+ */
+function saveUnlockedBlueprints(): void {
+  try {
+    writeFileSync(unlockedBlueprintsPath, JSON.stringify(Array.from(unlockedBlueprints)));
+    console.log('[Blueprints] Saved unlocked blueprints');
+  } catch (error) {
+    console.error('[Blueprints] Failed to save unlocked blueprints:', error);
   }
 }
 
@@ -642,6 +683,11 @@ function setupIPC(): void {
     return searchService.search(query, 10);
   });
 
+  // Get all items
+  ipcMain.handle(IPC_CHANNELS.GET_ALL_ITEMS, () => {
+    return searchService.getAllItems();
+  });
+
   // Hide overlay
   ipcMain.on(IPC_CHANNELS.HIDE_OVERLAY, () => {
     hideOverlay();
@@ -804,6 +850,22 @@ function setupIPC(): void {
     return stationLevels;
   });
 
+  // Get unlocked blueprints
+  ipcMain.handle('get-unlocked-blueprints', () => {
+    return Array.from(unlockedBlueprints);
+  });
+
+  // Set blueprint unlocked status
+  ipcMain.handle('set-blueprint-unlocked', (_event, blueprintId: string, unlocked: boolean) => {
+    if (unlocked) {
+      unlockedBlueprints.add(blueprintId);
+    } else {
+      unlockedBlueprints.delete(blueprintId);
+    }
+    saveUnlockedBlueprints();
+    return Array.from(unlockedBlueprints);
+  });
+
   // Calibration handlers
   ipcMain.handle(IPC_CHANNELS.GET_CALIBRATION, () => {
     return calibrationService.getSettings();
@@ -949,6 +1011,9 @@ if (!gotTheLock) {
 
     // Load station levels
     loadStationLevels();
+
+    // Load unlocked blueprints
+    loadUnlockedBlueprints();
 
     // Watch for window shortcuts in development
     app.on('browser-window-created', (_, window) => {

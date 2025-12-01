@@ -28,6 +28,9 @@ const api = {
   // Search
   searchItem: (query: string): Promise<unknown[]> => ipcRenderer.invoke(IPC_CHANNELS.SEARCH_ITEM, query),
 
+  // Get all items
+  getAllItems: (): Promise<unknown[]> => ipcRenderer.invoke(IPC_CHANNELS.GET_ALL_ITEMS),
+
   // Overlay control
   setOverlayInteractive: (interactive: boolean): void =>
     ipcRenderer.send(IPC_CHANNELS.SET_OVERLAY_INTERACTIVE, interactive),
@@ -68,6 +71,12 @@ const api = {
 
   setStationLevel: (stationId: string, level: number): Promise<Record<string, number>> =>
     ipcRenderer.invoke('set-station-level', stationId, level),
+
+  // Blueprints
+  getUnlockedBlueprints: (): Promise<string[]> => ipcRenderer.invoke('get-unlocked-blueprints'),
+
+  setBlueprintUnlocked: (blueprintId: string, unlocked: boolean): Promise<string[]> =>
+    ipcRenderer.invoke('set-blueprint-unlocked', blueprintId, unlocked),
 
   // Calibration
   getCalibration: (): Promise<CalibrationSettings> => ipcRenderer.invoke(IPC_CHANNELS.GET_CALIBRATION),

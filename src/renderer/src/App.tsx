@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import type { AppSettings, EnrichedItem } from '../../shared/types';
 import './App.css';
 import { ARCsPanel } from './components/ARCsPanel/ARCsPanel';
+import { BlueprintsPanel } from './components/BlueprintsPanel/BlueprintsPanel';
 import { CalibrationPanel } from './components/CalibrationPanel';
 import { HideoutPanel } from './components/HideoutPanel/HideoutPanel';
 import { ItemCard } from './components/ItemCard';
@@ -49,30 +50,41 @@ function App(): React.JSX.Element {
   const [dataStats, setDataStats] = useState<DataStats | null>(null);
   const [selectedItem, setSelectedItem] = useState<EnrichedItem | null>(null);
   const [scanHistory, setScanHistory] = useState<ScanHistoryEntry[]>([]);
-  const [activeTab, setActiveTab] = useState<'search' | 'quests' | 'hideout' | 'arcs' | 'settings'>('search');
+  const [activeTab, setActiveTab] = useState<'search' | 'quests' | 'hideout' | 'blueprints' | 'arcs' | 'settings'>(
+    'search',
+  );
   const [selectedBotId, setSelectedBotId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [completedQuests, setCompletedQuests] = useState<Set<string>>(new Set());
   const [inProgressQuests, setInProgressQuests] = useState<Set<string>>(new Set());
   const [stationLevels, setStationLevels] = useState<Record<string, number>>({});
+  const [unlockedBlueprints, setUnlockedBlueprints] = useState<Set<string>>(new Set());
 
   // Load initial data
   useEffect(() => {
     async function loadData(): Promise<void> {
       try {
-        const [loadedSettings, loadedStats, loadedCompletedQuests, loadedInProgressQuests, loadedStationLevels] =
-          await Promise.all([
-            window.api.getSettings(),
-            window.api.getDataStats(),
-            window.api.getCompletedQuests(),
-            window.api.getInProgressQuests(),
-            window.api.getStationLevels(),
-          ]);
+        const [
+          loadedSettings,
+          loadedStats,
+          loadedCompletedQuests,
+          loadedInProgressQuests,
+          loadedStationLevels,
+          loadedUnlockedBlueprints,
+        ] = await Promise.all([
+          window.api.getSettings(),
+          window.api.getDataStats(),
+          window.api.getCompletedQuests(),
+          window.api.getInProgressQuests(),
+          window.api.getStationLevels(),
+          window.api.getUnlockedBlueprints(),
+        ]);
         setSettings(loadedSettings);
         setDataStats(loadedStats);
         setCompletedQuests(new Set(loadedCompletedQuests));
         setInProgressQuests(new Set(loadedInProgressQuests));
         setStationLevels(loadedStationLevels as Record<string, number>);
+        setUnlockedBlueprints(new Set(loadedUnlockedBlueprints));
 
         // Initialize i18next with saved app language
         changeLanguage(loadedSettings.appLanguage);
@@ -213,6 +225,24 @@ function App(): React.JSX.Element {
     }
   }, []);
 
+  // Handle blueprint unlock toggle
+  const handleSetBlueprintUnlocked = useCallback(async (blueprintId: string, unlocked: boolean) => {
+    try {
+      await window.api.setBlueprintUnlocked(blueprintId, unlocked);
+      setUnlockedBlueprints(prev => {
+        const next = new Set(prev);
+        if (unlocked) {
+          next.add(blueprintId);
+        } else {
+          next.delete(blueprintId);
+        }
+        return next;
+      });
+    } catch (error) {
+      console.error('Failed to set blueprint unlocked:', error);
+    }
+  }, []);
+
   if (isLoading) {
     return (
       <div className="app-loading">
@@ -285,6 +315,13 @@ function App(): React.JSX.Element {
             >
               <span className="nav-icon">🏠</span>
               <span className="nav-text">{t('sidebar.hideout')}</span>
+            </button>
+            <button
+              className={`nav-btn ${activeTab === 'blueprints' ? 'active' : ''}`}
+              onClick={() => setActiveTab('blueprints')}
+            >
+              <span className="nav-icon">📜</span>
+              <span className="nav-text">{t('sidebar.blueprints')}</span>
             </button>
             <button
               className={`nav-btn ${activeTab === 'arcs' ? 'active' : ''}`}
@@ -403,6 +440,15 @@ function App(): React.JSX.Element {
               appLanguage={settings?.appLanguage}
               stationLevels={stationLevels}
               onSetStationLevel={handleSetStationLevel}
+              onNavigateToItem={handleNavigateToItem}
+            />
+          )}
+
+          {activeTab === 'blueprints' && (
+            <BlueprintsPanel
+              appLanguage={settings?.appLanguage}
+              unlockedBlueprints={unlockedBlueprints}
+              onSetBlueprintUnlocked={handleSetBlueprintUnlocked}
               onNavigateToItem={handleNavigateToItem}
             />
           )}
