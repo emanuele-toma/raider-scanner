@@ -98,7 +98,6 @@
     transparent calc(var(--progress) * 1%)
   );
   box-shadow: 0 0 10px var(--speranza-gold);
-  animation: pulse-glow 1s ease-in-out infinite;
 }
 
 .overlay-content {

@@ -34,6 +34,8 @@ const api = {
 
   hideOverlay: (): void => ipcRenderer.send(IPC_CHANNELS.HIDE_OVERLAY),
 
+  overlayReady: (scanId: number): void => ipcRenderer.send(IPC_CHANNELS.OVERLAY_READY, scanId),
+
   resizeOverlay: (width: number, height: number): void => ipcRenderer.send('resize-overlay', width, height),
 
   // Data

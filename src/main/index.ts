@@ -270,6 +270,7 @@ function saveStationLevels(): void {
 // State
 let isScanning = false;
 let autoHideTimer: NodeJS.Timeout | null = null;
+let currentOverlayScanId: number = 0; // Track which scan the overlay is showing
 
 /**
  * Get the data path for arcraiders-data
@@ -399,23 +400,37 @@ function showOverlay(result: ScanResult): void {
     autoHideTimer = null;
   }
 
-  // Get cursor position and store it for repositioning after resize
+  // Generate unique scan ID for this request
+  const scanId = Date.now();
+  currentOverlayScanId = scanId;
+
+  // Ensure window is off-screen before anything else
+  // Position must be set BEFORE showInactive to avoid flash
+  if (!overlayWindow?.isVisible()) {
+    overlayWindow?.setPosition(-10000, -10000);
+    overlayWindow?.showInactive();
+  } else {
+    // Already visible, just move off-screen
+    overlayWindow?.setPosition(-10000, -10000);
+  }
+
+  // Store cursor position for later positioning
   const cursorPos = screen.getCursorScreenPoint();
-  overlayWindow?.setPosition(cursorPos.x + 20, cursorPos.y + 20);
-  overlayWindow?.webContents.send(IPC_CHANNELS.SCAN_RESULT, result);
+
+  // Send scan result with ID - renderer will resize, then signal ready
+  overlayWindow?.webContents.send(IPC_CHANNELS.SCAN_RESULT, { ...result, _scanId: scanId });
 
   // Also send to main window so it can display the item
   mainWindow?.webContents.send(IPC_CHANNELS.SCAN_RESULT, result);
 
-  overlayWindow?.showInactive(); // Don't steal focus from game
+  // Store cursor position in a way the OVERLAY_READY handler can access
+  (overlayWindow as BrowserWindow & { pendingPosition?: { x: number; y: number } }).pendingPosition = {
+    x: cursorPos.x + 20,
+    y: cursorPos.y + 20,
+  };
 
   // Register overlay-specific hotkeys when overlay is shown
   registerOverlayHotkeys();
-
-  // Auto-hide after delay
-  autoHideTimer = setTimeout(() => {
-    hideOverlay();
-  }, settings.autoHideDelay);
 }
 
 /**
@@ -426,7 +441,8 @@ function hideOverlay(): void {
     clearTimeout(autoHideTimer);
     autoHideTimer = null;
   }
-  overlayWindow?.hide();
+  // Move off-screen instead of hiding to avoid show/hide flicker issues
+  overlayWindow?.setPosition(-10000, -10000);
 
   // Unregister overlay-specific hotkeys when overlay is hidden
   unregisterOverlayHotkeys();
@@ -629,6 +645,54 @@ function setupIPC(): void {
   // Hide overlay
   ipcMain.on(IPC_CHANNELS.HIDE_OVERLAY, () => {
     hideOverlay();
+  });
+
+  // Overlay signals it's ready to be shown (content rendered and sized)
+  ipcMain.on(IPC_CHANNELS.OVERLAY_READY, (_event, scanId: number) => {
+    // Only process if this is for the current scan (prevents double-open from stale requests)
+    if (scanId !== currentOverlayScanId) {
+      console.log(`[Main] Ignoring stale OVERLAY_READY (got ${scanId}, current is ${currentOverlayScanId})`);
+      return;
+    }
+
+    if (overlayWindow) {
+      // Get the stored cursor position and move window there
+      const pending = (overlayWindow as BrowserWindow & { pendingPosition?: { x: number; y: number } }).pendingPosition;
+      if (pending) {
+        // Get window size and screen bounds
+        const [width, height] = overlayWindow.getSize();
+        const primaryDisplay = screen.getPrimaryDisplay();
+        const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
+
+        // Calculate position with screen bounds check
+        let x = pending.x;
+        let y = pending.y;
+
+        // Adjust if going off-screen
+        if (x + width > screenWidth) {
+          x = screenWidth - width - 10;
+        }
+        if (y + height > screenHeight) {
+          y = screenHeight - height - 10;
+        }
+        if (x < 0) x = 10;
+        if (y < 0) y = 10;
+
+        overlayWindow.setPosition(Math.floor(x), Math.floor(y));
+        (overlayWindow as BrowserWindow & { pendingPosition?: { x: number; y: number } }).pendingPosition = undefined;
+      }
+
+      // Clear the current scan ID to prevent any more ready signals for this scan
+      currentOverlayScanId = 0;
+
+      // Start auto-hide timer now that overlay is visible
+      if (autoHideTimer) {
+        clearTimeout(autoHideTimer);
+      }
+      autoHideTimer = setTimeout(() => {
+        hideOverlay();
+      }, settings.autoHideDelay);
+    }
   });
 
   // Resize overlay window to fit content and reposition to stay on screen

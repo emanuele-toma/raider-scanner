@@ -20,99 +20,76 @@ function OverlayApp(): React.JSX.Element {
   const [inProgressQuests, setInProgressQuests] = useState<Set<string>>(new Set());
   const [stationLevels, setStationLevels] = useState<Record<string, number>>({});
   const containerRef = useRef<HTMLDivElement>(null);
-  const countdownRef = useRef<NodeJS.Timeout | null>(null);
+  const lastProcessedScanRef = useRef<number>(0); // Track which scan we've processed
+  const showTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Use refs to avoid stale closures in callbacks
-  const countdownValueRef = useRef<number>(100);
-  const settingsRef = useRef<AppSettings | null>(null);
+  // RAF-based countdown refs
+  const rafRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number>(0);
+  const durationRef = useRef<number>(0);
+  const pausedAtRef = useRef<number>(100);
   const isPausedRef = useRef<boolean>(false);
 
-  // Keep refs in sync with state
+  // Cleanup RAF on unmount
   useEffect(() => {
-    countdownValueRef.current = countdown;
-  }, [countdown]);
-
-  useEffect(() => {
-    settingsRef.current = settings;
-  }, [settings]);
-
-  useEffect(() => {
-    isPausedRef.current = isPaused;
-  }, [isPaused]);
-
-  // Clear any running interval
-  const clearCountdownInterval = useCallback(() => {
-    if (countdownRef.current) {
-      clearInterval(countdownRef.current);
-      countdownRef.current = null;
-    }
+    return () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
   }, []);
 
-  // Start countdown timer
-  const startCountdown = useCallback(
-    (duration: number) => {
-      // Clear any existing countdown
-      clearCountdownInterval();
+  // Start countdown timer using requestAnimationFrame
+  const startCountdown = useCallback((duration: number) => {
+    // Cancel any existing animation
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+    }
 
-      // Reset state
-      setCountdown(100);
-      countdownValueRef.current = 100;
-      setIsPaused(false);
-      isPausedRef.current = false;
+    // Reset state
+    setCountdown(100);
+    setIsPaused(false);
+    isPausedRef.current = false;
+    durationRef.current = duration;
+    startTimeRef.current = performance.now();
+    pausedAtRef.current = 100;
 
-      const startTime = Date.now();
+    const animate = (currentTime: number): void => {
+      if (isPausedRef.current) {
+        // Don't update while paused, but keep the RAF going
+        rafRef.current = requestAnimationFrame(animate);
+        return;
+      }
 
-      countdownRef.current = setInterval(() => {
-        const elapsed = Date.now() - startTime;
-        const remaining = Math.max(0, 100 - (elapsed / duration) * 100);
-        setCountdown(remaining);
-        countdownValueRef.current = remaining;
+      const elapsed = currentTime - startTimeRef.current;
+      const remaining = Math.max(0, pausedAtRef.current - (elapsed / durationRef.current) * 100);
 
-        if (remaining <= 0) {
-          clearCountdownInterval();
-        }
-      }, 50);
-    },
-    [clearCountdownInterval],
-  );
+      setCountdown(remaining);
+
+      if (remaining > 0) {
+        rafRef.current = requestAnimationFrame(animate);
+      } else {
+        rafRef.current = null;
+      }
+    };
+
+    rafRef.current = requestAnimationFrame(animate);
+  }, []);
 
   // Toggle countdown timer (pause/resume)
   const toggleCountdown = useCallback(() => {
-    const currentSettings = settingsRef.current;
-    const currentCountdown = countdownValueRef.current;
-    const currentlyPaused = isPausedRef.current;
-
-    if (currentlyPaused) {
-      // Resume: restart countdown from current position
-      if (currentSettings && currentCountdown > 0) {
-        clearCountdownInterval();
-
-        const remainingTime = (currentCountdown / 100) * currentSettings.autoHideDelay;
-        const startTime = Date.now();
-        const startCountdownValue = currentCountdown;
-
-        countdownRef.current = setInterval(() => {
-          const elapsed = Date.now() - startTime;
-          const remaining = Math.max(0, startCountdownValue - (elapsed / remainingTime) * startCountdownValue);
-          setCountdown(remaining);
-          countdownValueRef.current = remaining;
-
-          if (remaining <= 0) {
-            clearCountdownInterval();
-          }
-        }, 50);
-      }
-      setIsPaused(false);
+    if (isPausedRef.current) {
+      // Resuming - reset start time and continue from current position
+      startTimeRef.current = performance.now();
       isPausedRef.current = false;
-      console.log('[Overlay] Timer resumed');
+      setIsPaused(false);
     } else {
-      // Pause: stop the countdown
-      clearCountdownInterval();
-      setIsPaused(true);
+      // Pausing - store current countdown value
+      pausedAtRef.current = countdown;
       isPausedRef.current = true;
-      console.log('[Overlay] Timer paused');
+      setIsPaused(true);
     }
-  }, [clearCountdownInterval]);
+  }, [countdown]);
 
   // Listen for toggle timer event - stable callback, no dependencies on changing values
   useEffect(() => {
@@ -122,15 +99,6 @@ function OverlayApp(): React.JSX.Element {
     });
     return cleanup;
   }, [toggleCountdown]);
-
-  // Cleanup countdown on unmount
-  useEffect(() => {
-    return () => {
-      if (countdownRef.current) {
-        clearInterval(countdownRef.current);
-      }
-    };
-  }, []);
 
   // Resize window to fit content
   const resizeWindow = useCallback(() => {
@@ -145,9 +113,21 @@ function OverlayApp(): React.JSX.Element {
 
   // Listen for scan results and reload settings each time
   useEffect(() => {
-    const cleanup = window.api.onScanResult(async (result: ScanResult) => {
-      console.log('[Overlay] Received scan result:', result);
-      // Reload settings and quest states, then set result
+    const cleanup = window.api.onScanResult(async (result: ScanResult & { _scanId?: number }) => {
+      // Extract scan ID from result
+      const scanId = result._scanId || Date.now();
+      console.log('[Overlay] Received scan result:', result, 'scanId:', scanId);
+
+      // Cancel any pending show timeout from previous scan
+      if (showTimeoutRef.current) {
+        clearTimeout(showTimeoutRef.current);
+        showTimeoutRef.current = null;
+      }
+
+      // Store the scanId for this request
+      lastProcessedScanRef.current = scanId;
+
+      // Reload settings and quest states
       const [newSettings, completed, inProgress, levels] = await Promise.all([
         window.api.getSettings(),
         window.api.getCompletedQuests(),
@@ -159,26 +139,32 @@ function OverlayApp(): React.JSX.Element {
       // Update i18next language to match app language
       changeLanguage(newSettings.appLanguage);
 
+      // Set all state together
       setSettings(newSettings);
       setCompletedQuests(new Set(completed));
       setInProgressQuests(new Set(inProgress));
       setStationLevels(levels as Record<string, number>);
       setScanResult(result);
-      // Start countdown based on autoHideDelay
-      startCountdown(newSettings.autoHideDelay);
+
+      // After a short delay for render, resize and signal ready
+      showTimeoutRef.current = setTimeout(() => {
+        // Only proceed if this is still the current scan
+        if (lastProcessedScanRef.current !== scanId) {
+          console.log('[Overlay] Skipping stale scan:', scanId);
+          return;
+        }
+
+        resizeWindow();
+
+        // Signal main process to move window into view, passing scanId
+        console.log('[Overlay] Signaling ready for scanId:', scanId);
+        window.api.overlayReady(scanId);
+        startCountdown(newSettings.autoHideDelay);
+      }, 100);
     });
 
     return cleanup;
-  }, [startCountdown]);
-
-  // Resize window when content or settings change
-  useEffect(() => {
-    if (!scanResult || !settings) return;
-
-    // Small delay to let content render with new settings
-    const timer = setTimeout(resizeWindow, 100);
-    return () => clearTimeout(timer);
-  }, [scanResult, settings, resizeWindow]);
+  }, [resizeWindow, startCountdown]);
 
   // Don't render anything if no result
   if (!scanResult) {

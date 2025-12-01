@@ -25,6 +25,7 @@ interface RaiderScannerAPI {
   // Overlay control
   setOverlayInteractive(interactive: boolean): void;
   hideOverlay(): void;
+  overlayReady(scanId: number): void;
   resizeOverlay(width: number, height: number): void;
 
   // Data

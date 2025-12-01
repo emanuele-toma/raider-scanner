@@ -271,6 +271,7 @@ export const IPC_CHANNELS = {
   SEARCH_ITEM: 'search-item',
   SET_OVERLAY_INTERACTIVE: 'set-overlay-interactive',
   HIDE_OVERLAY: 'hide-overlay',
+  OVERLAY_READY: 'overlay-ready',
 
   // Calibration
   START_CALIBRATION: 'start-calibration',

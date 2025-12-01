@@ -9,6 +9,39 @@ import type { EnrichedItem, LocalizedString } from '../../../../shared/types';
 import { getLocalizedString } from '../../i18n';
 import './ItemCard.css';
 
+// Import all item images using Vite's glob import
+// This creates a static mapping that Vite can analyze and bundle
+const itemImageModules = import.meta.glob<{ default: string }>(
+  '../../../../arcraiders-data/images/items/*.{png,webp}',
+  { eager: true },
+);
+
+// Create a map from filename to URL
+const itemImages: Record<string, string> = {};
+for (const path in itemImageModules) {
+  // Extract filename without extension (e.g., "bandage" from ".../bandage.png")
+  const filename =
+    path
+      .split('/')
+      .pop()
+      ?.replace(/\.(png|webp)$/, '') || '';
+  itemImages[filename] = itemImageModules[path].default;
+}
+
+/**
+ * Get the local image URL for an item
+ * Falls back to CDN URL if local image not found
+ */
+function getItemImageUrl(imageFilename: string): string {
+  // Extract the filename from CDN URL (e.g., "bandage" from "https://cdn.arctracker.io/items/bandage.png")
+  const cdnFilename =
+    imageFilename
+      .split('/')
+      .pop()
+      ?.replace(/\.(png|webp)$/, '') || '';
+  return itemImages[cdnFilename] || imageFilename;
+}
+
 interface ItemCardProps {
   item: EnrichedItem;
   confidence?: number;
@@ -228,7 +261,7 @@ export default function ItemCard({
       {item.imageFilename && (
         <div className="item-card-image-container">
           <img
-            src={item.imageFilename}
+            src={getItemImageUrl(item.imageFilename)}
             alt={itemName}
             className="item-card-image"
             onError={e => {
