@@ -383,7 +383,7 @@ function App(): React.JSX.Element {
 
       {/* Footer */}
       <footer className="app-footer">
-        <span className="footer-text">{t('app.footer')}</span>
+        <span className="footer-text">{t('app.footer', { version: __APP_VERSION__ })}</span>
       </footer>
 
       {/* Update Notification */}

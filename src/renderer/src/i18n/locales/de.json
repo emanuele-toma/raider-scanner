@@ -1,6 +1,6 @@
 {
   "app": {
-    "footer": "Raider Scanner v1.4.0 • Daten bereitgestellt von RaidTheory/arcraiders-data",
+    "footer": "Raider Scanner v{{version}} • Daten bereitgestellt von RaidTheory/arcraiders-data",
     "loading": "Raider Scanner wird initialisiert...",
     "title": "RAIDER SCANNER"
   },
